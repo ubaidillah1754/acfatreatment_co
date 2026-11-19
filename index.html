@@ -11,10 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Referrer Policy untuk YouTube Embed & Media -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
   <!-- Favicon Logo Resmi -->
   <link rel="icon" type="image/png" href="logo.png">
 
-  <link rel="stylesheet" href="style.css?v=6.0">
+  <link rel="stylesheet" href="style.css?v=8.0">
 </head>
 <body>
 
@@ -93,29 +96,16 @@
             <small>PROFIL BISNIS / ACFATREATMENT</small>
           </div>
 
-          <!-- YouTube Player Container -->
+          <!-- YouTube Player Container (Official Responsive Embed) -->
           <div class="video-content" id="videoContentArea">
-            <div class="video-poster" id="videoPoster" style="background-image: linear-gradient(180deg, rgba(20, 45, 78, 0.5) 0%, rgba(20, 45, 78, 0.9) 100%), url('https://img.youtube.com/vi/UhSJwrgIjIU/hqdefault.jpg');">
-              <button class="play-button" id="playBtn" role="button" aria-label="Putar video profil YouTube" tabindex="0">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-              </button>
-              <p>TONTON VIDEO RESMI<br><strong>ACFATREATMENT</strong></p>
-              <div class="video-badge-pill">
-                <span class="badge-dot"></span>
-                <span>YOUTUBE SHOWCASE · KLIK UNTUK PUTAR</span>
-              </div>
-            </div>
-
-            <!-- YouTube Iframe Responsive Embed -->
-            <div class="youtube-embed-wrapper" id="youtubeWrapper" style="display: none;">
+            <div class="youtube-embed-wrapper" id="youtubeWrapper">
               <iframe 
                 id="youtubePlayerIframe" 
-                src="" 
+                src="https://www.youtube.com/embed/UhSJwrgIjIU?si=fKI4qNxp57E3YYl7" 
                 title="acfatreatment Video Profil Kemitraan" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin" 
                 allowfullscreen>
               </iframe>
             </div>
@@ -668,6 +658,6 @@
   </a>
 
   <!-- JavaScript -->
-  <script src="script.js?v=4.0"></script>
+  <script src="script.js?v=8.0"></script>
 </body>
 </html>

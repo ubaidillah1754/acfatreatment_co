@@ -26,49 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const cleanVideoId = extractYouTubeId(CONFIG.youtubeVideoId);
 
   // =========================================================================
-  // 2. YOUTUBE VIDEO PLAYER CONTROLLER
+  // 2. YOUTUBE VIDEO EMBED CONTROLLER
   // =========================================================================
-  const playBtn = document.getElementById("playBtn");
-  const videoPoster = document.getElementById("videoPoster");
-  const youtubeWrapper = document.getElementById("youtubeWrapper");
-  const youtubePlayerIframe = document.getElementById("youtubePlayerIframe");
   const videoTimeStatus = document.getElementById("videoTimeStatus");
-
-  // Pasang thumbnail video resmi YouTube
-  if (videoPoster) {
-    const ytThumbnail = `https://img.youtube.com/vi/${cleanVideoId}/maxresdefault.jpg`;
-    const fallbackThumbnail = `https://img.youtube.com/vi/${cleanVideoId}/hqdefault.jpg`;
-
-    const imgTest = new Image();
-    imgTest.onload = function () {
-      if (this.naturalWidth > 120) {
-        videoPoster.style.backgroundImage = `linear-gradient(180deg, rgba(20, 45, 78, 0.45) 0%, rgba(20, 45, 78, 0.9) 100%), url('${ytThumbnail}')`;
-      } else {
-        videoPoster.style.backgroundImage = `linear-gradient(180deg, rgba(20, 45, 78, 0.45) 0%, rgba(20, 45, 78, 0.9) 100%), url('${fallbackThumbnail}')`;
-      }
-    };
-    imgTest.onerror = function () {
-      videoPoster.style.backgroundImage = `linear-gradient(180deg, rgba(20, 45, 78, 0.45) 0%, rgba(20, 45, 78, 0.9) 100%), url('${fallbackThumbnail}')`;
-    };
-    imgTest.src = ytThumbnail;
+  if (videoTimeStatus) {
+    videoTimeStatus.textContent = "HD 1080P · RESMI";
   }
-
-  function playVideo() {
-    if (!youtubePlayerIframe) return;
-    videoPoster.style.display = "none";
-    youtubeWrapper.style.display = "block";
-
-    const embedUrl = `https://www.youtube.com/embed/${cleanVideoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-    youtubePlayerIframe.src = embedUrl;
-
-    if (videoTimeStatus) {
-      videoTimeStatus.textContent = "MEMUTAR VIDEO...";
-      videoTimeStatus.style.color = "#7BC96F";
-    }
-  }
-
-  if (playBtn) playBtn.addEventListener("click", (e) => { e.stopPropagation(); playVideo(); });
-  if (videoPoster) videoPoster.addEventListener("click", playVideo);
 
   // =========================================================================
   // 3. PILIH PAKET -> OTOMATIS PILIH DROPDOWN & FOCUS FORM
