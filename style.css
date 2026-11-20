@@ -931,9 +931,11 @@ section[id],
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 12px 6px 28px 6px;
+  padding: 16px 8px 28px 8px;
   cursor: grab;
   user-select: none;
+  perspective: 1200px;
+  perspective-origin: center center;
 }
 
 .testimonial-slider-container::-webkit-scrollbar {
@@ -950,6 +952,12 @@ section[id],
   display: flex;
   gap: 24px;
   width: max-content;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  perspective: 1200px;
+  perspective-origin: center center;
+  transform-style: preserve-3d;
 }
 
 .testimonial-grid {
@@ -958,6 +966,39 @@ section[id],
   gap: 24px;
 }
 
+/* ==========================================================================
+   CSS SCROLL-DRIVEN ANIMATION: Z-STACK (Adam Argyle Style)
+   ========================================================================== */
+[scroll-animation="z-stack"] {
+  perspective: 1200px;
+  perspective-origin: center center;
+  transform-style: preserve-3d;
+}
+
+[scroll-animation="z-stack"] > li {
+  animation-range: unset;
+}
+
+@keyframes z-stack {
+  entry 0% {
+    transform: translateZ(1000px);
+    opacity: 0;
+  }
+  entry 200% {
+    opacity: 0;
+  }
+  exit -200% {
+    opacity: 1;
+  }
+  exit 100% {
+    transform: translateZ(-1000px);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   TESTIMONIAL CARDS (Clear, Sharp, Non-Zoomed with Z-Stack Hover)
+   ========================================================================== */
 .testimonial-card {
   flex: 0 0 360px;
   max-width: 380px;
@@ -966,21 +1007,33 @@ section[id],
   border-radius: var(--radius-md);
   padding: 28px 24px;
   border: 1px solid var(--border-primary);
-  box-shadow: var(--shadow-subtle);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
-  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1), box-shadow 0.4s cubic-bezier(0.2, 0.9, 0.25, 1), border-color 0.3s ease;
+  position: relative;
+  transform: translateZ(0); /* Baseline z-stack level — scale 1.0, NO ZOOM */
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.28s ease,
+              z-index 0.28s ease;
+  will-change: transform, box-shadow;
 }
 
+/* Hover: ONLY z-stack elevation (no zoom, no tilt, text stays 100% readable) */
 .testimonial-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: var(--shadow-card);
+  transform: translateZ(28px);
+  z-index: 10;
+  border-color: rgba(255, 255, 255, 0.38);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
 }
 
 .testimonial-card.highlight-mitra {
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
-  box-shadow: var(--shadow-card);
+  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.testimonial-card.highlight-mitra:hover {
+  border-color: #FFFFFF;
 }
 
 /* Pagination Dots */
@@ -2463,7 +2516,6 @@ body::after {
 }
 
 /* High-impact interactive hover physics on cards */
-.testimonial-card,
 .branch-card,
 .product-service-card,
 .timeline-step,
@@ -2471,7 +2523,6 @@ body::after {
   transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1), box-shadow 0.3s cubic-bezier(0.2, 0.9, 0.25, 1), border-color 0.2s ease;
 }
 
-.testimonial-card:hover,
 .branch-card:hover,
 .product-service-card:hover,
 .timeline-step:hover,

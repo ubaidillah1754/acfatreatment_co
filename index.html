@@ -20,7 +20,7 @@
   <!-- Favicon Logo Resmi -->
   <link rel="icon" type="image/png" href="asset/logo.png">
 
-  <link rel="stylesheet" href="style.css?v=19.0">
+  <link rel="stylesheet" href="style.css?v=21.0">
 </head>
 
 <body>
@@ -184,11 +184,11 @@
             </div>
           </div>
 
-          <!-- Slider Container (Horizontal Drag & Snap Scroll) -->
-          <div class="testimonial-slider-container" id="mitraSlider">
-            <div class="testimonial-track reveal-group" id="mitraTrack">
+          <!-- Slider Container (Horizontal Drag & Snap Scroll with 3D Z-Stack Animation) -->
+          <div class="testimonial-slider-container" id="mitraSlider" scroll-animation="z-stack">
+            <ul class="testimonial-track reveal-group" id="mitraTrack" scroll-animation="z-stack" style="--_animation: z-stack">
               <!-- Mitra 1 -->
-              <div class="testimonial-card highlight-mitra reveal-item">
+              <li class="testimonial-card highlight-mitra reveal-item">
                 <div class="mitra-profit-banner">
                   <span class="profit-label">Rata-rata Omzet Gerai:</span>
                   <strong class="profit-value">Rp 28.000.000 - Rp 35.000.000 / Bulan</strong>
@@ -210,10 +210,10 @@
                   Permintaan
                   cuci helm harian dan sepatu kantor ramai setiap minggunya!"
                 </blockquote>
-              </div>
+              </li>
 
               <!-- Mitra 2 -->
-              <div class="testimonial-card reveal-item">
+              <li class="testimonial-card reveal-item">
                 <div class="mitra-profit-banner banner-green">
                   <span class="profit-label">Estimasi Laba Bersih:</span>
                   <strong class="profit-value">Rp 16.500.000 - Rp 21.000.000 / Bulan</strong>
@@ -234,10 +234,10 @@
                   bahan,
                   konsumen selalu balik lagi."
                 </blockquote>
-              </div>
+              </li>
 
               <!-- Mitra 3 -->
-              <div class="testimonial-card reveal-item">
+              <li class="testimonial-card reveal-item">
                 <div class="mitra-profit-banner banner-yellow">
                   <span class="profit-label">Kecepatan Balik Modal:</span>
                   <strong class="profit-value">BEP Tercapai dalam 3,5 Bulan</strong>
@@ -259,10 +259,10 @@
                   jasanya
                   sangat menarik!"
                 </blockquote>
-              </div>
+              </li>
 
               <!-- Mitra 4 -->
-              <div class="testimonial-card reveal-item">
+              <li class="testimonial-card reveal-item">
                 <div class="mitra-profit-banner">
                   <span class="profit-label">Volume Order Repeat Pelanggan:</span>
                   <strong class="profit-value">350+ Pasang Sepatu &amp; Helm / Bln</strong>
@@ -282,10 +282,10 @@
                   antusias dengan layanan unyellowing dan repaint kami. SOP pengerjaan yang rapi membuat pelanggan
                   percaya merekomendasikan ke teman-temannya."
                 </blockquote>
-              </div>
+              </li>
 
               <!-- Mitra 5 -->
-              <div class="testimonial-card reveal-item">
+              <li class="testimonial-card reveal-item">
                 <div class="mitra-profit-banner banner-green">
                   <span class="profit-label">Layanan Keluarga &amp; Ibu Muda:</span>
                   <strong class="profit-value">Laba Bersih Rp 18.000.000 - Rp 23.500.000 / Bln</strong>
@@ -305,10 +305,10 @@
                   Dengan chemical anti-bakteri bersertifikasi aman untuk bayi dari acfatreatment, order treatment
                   stroller kami selalu antre setiap akhir pekan!"
                 </blockquote>
-              </div>
+              </li>
 
               <!-- Mitra 6 -->
-              <div class="testimonial-card reveal-item">
+              <li class="testimonial-card reveal-item">
                 <div class="mitra-profit-banner banner-yellow">
                   <span class="profit-label">Efisiensi Biaya &amp; Balik Modal:</span>
                   <strong class="profit-value">BEP Cepat di Bulan ke-3</strong>
@@ -328,10 +328,10 @@
                   pembersih terukur sesuai SOP, jadi tidak ada bahan terbuang percuma. Di bulan ke-3 modal sudah balik
                   dan gerai mencetak laba bersih sehat."
                 </blockquote>
-              </div>
+              </li>
 
               <!-- Mitra 7 -->
-              <div class="testimonial-card highlight-mitra reveal-item">
+              <li class="testimonial-card highlight-mitra reveal-item">
                 <div class="mitra-profit-banner">
                   <span class="profit-label">Rekor Omzet Cabang Luar Jawa:</span>
                   <strong class="profit-value">Rp 32.000.000 - Rp 40.000.000 / Bulan</strong>
@@ -351,8 +351,8 @@
                   sepatu premium dan helm full-face di Medan masih sangat minim kompetitor sekelas ini. Omzet tembus di
                   atas ekspektasi sejak bulan kedua!"
                 </blockquote>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
 
           <!-- Slider Pagination Dots (7 Dots) -->
@@ -918,7 +918,7 @@
   </a>
 
   <!-- JavaScript -->
-  <script src="script.js?v=17.0"></script>
+  <script src="script.js?v=19.0"></script>
 </body>
 
 </html>
