@@ -383,5 +383,54 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  // =========================================================================
+  // 10. MANFAAT BLUR-TO-FOCUS & EFEK ULIR SCROLL ANIMATION (Wealthclub Style)
+  // =========================================================================
+  (function initManfaatBlur() {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const items = document.querySelectorAll(".manfaat-item");
+    if (!items.length) return;
+
+    function updateScrollEffects() {
+      const vh = window.innerHeight;
+
+      items.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        // Item starts entering at 88% of viewport, finishes reveal around 38%
+        const start = vh * 0.88;
+        const end = vh * 0.38;
+        const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
+
+        // 1. Efek Ulir: Rotation tilt from 2.5deg to 0deg based on scroll progress
+        const wordsWrap = item.querySelector(".manfaat-words");
+        if (wordsWrap) {
+          const rot = (1 - progress) * 2.5;
+          wordsWrap.style.setProperty("--rot", `${rot.toFixed(2)}deg`);
+        }
+
+        // 2. Word-by-word blur-to-focus reveal
+        const words = item.querySelectorAll(".mw");
+        const totalWords = words.length;
+        if (!totalWords) return;
+
+        words.forEach((word, i) => {
+          // Stagger each word sequentially across progress 0..0.95
+          const threshold = (i / totalWords) * 0.95;
+          if (progress >= threshold) {
+            word.classList.add("mw-focused");
+          } else {
+            word.classList.remove("mw-focused");
+          }
+        });
+      });
+    }
+
+    window.addEventListener("scroll", updateScrollEffects, { passive: true });
+    window.addEventListener("resize", updateScrollEffects, { passive: true });
+    updateScrollEffects();
+  })();
 });
 
