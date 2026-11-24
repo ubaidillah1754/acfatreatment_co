@@ -26,11 +26,99 @@ document.addEventListener("DOMContentLoaded", () => {
   const cleanVideoId = extractYouTubeId(CONFIG.youtubeVideoId);
 
   // =========================================================================
-  // 2. YOUTUBE VIDEO EMBED CONTROLLER
+  // 2. YOUTUBE VIDEO EMBED & SCROLL AUTOPLAY CONTROLLER
   // =========================================================================
   const videoTimeStatus = document.getElementById("videoTimeStatus");
   if (videoTimeStatus) {
     videoTimeStatus.textContent = "HD 1080P · RESMI";
+  }
+
+  const youtubeIframe = document.getElementById("youtubePlayerIframe");
+  const videoContainer = document.querySelector(".testimoni-video-container");
+
+  if (youtubeIframe && videoContainer) {
+    // Pastikan URL iframe siap dengan enablejsapi=1, mute=1, playsinline=1, rel=0
+    const desiredSrc = `https://www.youtube.com/embed/${cleanVideoId}?enablejsapi=1&mute=1&playsinline=1&rel=0`;
+    if (!youtubeIframe.src || !youtubeIframe.src.includes("enablejsapi=1")) {
+      youtubeIframe.src = desiredSrc;
+    }
+
+    function sendYTCommand(command, args = "") {
+      try {
+        if (youtubeIframe && youtubeIframe.contentWindow) {
+          youtubeIframe.contentWindow.postMessage(
+            JSON.stringify({ event: "command", func: command, args: args }),
+            "*"
+          );
+        }
+      } catch (err) {
+        // Cross-origin safe guard
+      }
+    }
+
+    let isVideoPlaying = false;
+
+    function playYT() {
+      // Browser modern (Chrome/Safari/Edge/iOS/Android) mewajibkan video dalam kondisi mute
+      // agar diizinkan autoplay saat discroll tanpa interaksi tombol khusus.
+      sendYTCommand("mute");
+      sendYTCommand("playVideo");
+      isVideoPlaying = true;
+    }
+
+    function pauseYT() {
+      if (isVideoPlaying) {
+        sendYTCommand("pauseVideo");
+        isVideoPlaying = false;
+      }
+    }
+
+    // Saat iframe selesai termuat, cek apakah posisi saat ini sudah di area video
+    youtubeIframe.addEventListener("load", () => {
+      sendYTCommand("mute");
+      const rect = videoContainer.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+      if (inView) {
+        playYT();
+      }
+    });
+
+    // Deteksi scroll menggunakan IntersectionObserver (efisien dan tidak membebani memori)
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            // Ketika user scroll dan video masuk ke layar (>= 30% area terlihat)
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.28) {
+              playYT();
+            } else if (!entry.isIntersecting || entry.intersectionRatio < 0.15) {
+              // Ketika user scroll menjauh ke atas atau ke bawah
+              pauseYT();
+            }
+          });
+        },
+        {
+          threshold: [0.1, 0.28, 0.5, 0.8]
+        }
+      );
+      observer.observe(videoContainer);
+    } else {
+      // Fallback untuk browser lawas
+      let scrollTimer = null;
+      window.addEventListener("scroll", () => {
+        if (scrollTimer) return;
+        scrollTimer = setTimeout(() => {
+          scrollTimer = null;
+          const rect = videoContainer.getBoundingClientRect();
+          const inView = rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+          if (inView) {
+            playYT();
+          } else {
+            pauseYT();
+          }
+        }, 150);
+      }, { passive: true });
+    }
   }
 
   // =========================================================================
@@ -389,10 +477,14 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   (function initManfaatBlur() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+<<<<<<< HEAD
     const isTouchOrMobile = window.matchMedia("(hover: none)").matches || window.innerWidth <= 991;
 
     // Di mobile / layar sentuh / prefers-reduced: langsung tampilkan teks 100% tajam tanpa blur
     if (prefersReduced || isTouchOrMobile) {
+=======
+    if (prefersReduced) {
+>>>>>>> 2baf4d4ee58ed11e5094e8b6c4b90ef6644f05b9
       document.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
       return;
     }
@@ -402,18 +494,20 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
 
     function updateScrollEffects() {
       const vh = window.innerHeight;
+      const isMobile = window.innerWidth <= 768;
 
       items.forEach((item) => {
         const rect = item.getBoundingClientRect();
-        // Item starts entering at 88% of viewport, finishes reveal around 38%
-        const start = vh * 0.88;
-        const end = vh * 0.38;
+        // Item starts entering around 90% of viewport, finishes reveal around 32%
+        const start = isMobile ? vh * 0.90 : vh * 0.88;
+        const end = isMobile ? vh * 0.32 : vh * 0.38;
         const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
 
-        // 1. Efek Ulir: Rotation tilt from 2.5deg to 0deg based on scroll progress
+        // 1. Efek Ulir: Rotation tilt based on scroll progress
         const wordsWrap = item.querySelector(".manfaat-words");
         if (wordsWrap) {
-          const rot = (1 - progress) * 2.5;
+          const maxRot = isMobile ? 1.6 : 2.5;
+          const rot = (1 - progress) * maxRot;
           wordsWrap.style.setProperty("--rot", `${rot.toFixed(2)}deg`);
         }
 
@@ -433,6 +527,16 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         });
       });
     }
+
+    // Touch support for mobile: tapping immediately brings the touched item into full focus
+    items.forEach((item) => {
+      item.addEventListener("touchstart", () => {
+        item.classList.add("is-touched");
+        item.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
+        const wordsWrap = item.querySelector(".manfaat-words");
+        if (wordsWrap) wordsWrap.style.setProperty("--rot", "0deg");
+      }, { passive: true });
+    });
 
     window.addEventListener("scroll", updateScrollEffects, { passive: true });
     window.addEventListener("resize", updateScrollEffects, { passive: true });

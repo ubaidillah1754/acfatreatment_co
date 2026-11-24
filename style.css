@@ -2427,20 +2427,47 @@ section[id],
   }
 
   .manfaat-label {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+  }
+
+  .manfaat-item:active .manfaat-label,
+  .manfaat-item.is-touched .manfaat-label {
+    color: #FFFFFF;
   }
 
   .manfaat-words {
     font-size: clamp(20px, 5.6vw, 28px);
     line-height: 1.35;
-    transform: none !important;
+    transform-origin: 0% 50%;
+    transform: rotate(var(--rot, 0deg));
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Di layar HP/mobile: teks manfaat harus langsung tajam & 100% terbaca (tanpa blur 0.15 yang bikin hilang) */
+  /* Efek Blur-to-Focus & Ulir responsif di layar mobile / HP */
   .mw {
-    filter: none !important;
+    display: inline-block;
+    filter: blur(4px);
+    opacity: 0.2;
+    transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mw.mw-focused {
+    filter: blur(0px) !important;
     opacity: 1 !important;
-    transform: none !important;
+  }
+
+  .manfaat-item:active .mw,
+  .manfaat-item.is-touched .mw {
+    filter: blur(0px) !important;
+    opacity: 1 !important;
+  }
+
+  .manfaat-item:active .manfaat-words,
+  .manfaat-item.is-touched .manfaat-words {
+    transform: rotate(0deg) !important;
   }
 }
 
