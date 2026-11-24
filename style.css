@@ -2417,6 +2417,9 @@ section[id],
 
   .manfaat-heading {
     margin-bottom: 40px;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
   }
 
   .manfaat-blur-stage {
@@ -2434,6 +2437,29 @@ section[id],
   }
 
   /* Di layar HP/mobile: teks manfaat harus langsung tajam & 100% terbaca (tanpa blur 0.15 yang bikin hilang) */
+  .mw {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Fallback menyeluruh untuk semua perangkat sentuh / tablet / mobile */
+@media (hover: none), (max-width: 991px) {
+  .manfaat-heading {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .manfaat-label {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  .manfaat-words {
+    transform: none !important;
+  }
+
   .mw {
     filter: none !important;
     opacity: 1 !important;

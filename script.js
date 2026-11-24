@@ -389,8 +389,10 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   (function initManfaatBlur() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Di mobile / prefers-reduced: pastikan semua kata langsung fokus dan terlihat jelas
-    if (prefersReduced || window.innerWidth <= 768) {
+    const isTouchOrMobile = window.matchMedia("(hover: none)").matches || window.innerWidth <= 991;
+
+    // Di mobile / layar sentuh / prefers-reduced: langsung tampilkan teks 100% tajam tanpa blur
+    if (prefersReduced || isTouchOrMobile) {
       document.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
       return;
     }
