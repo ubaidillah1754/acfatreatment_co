@@ -477,14 +477,10 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   (function initManfaatBlur() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-<<<<<<< HEAD
     const isTouchOrMobile = window.matchMedia("(hover: none)").matches || window.innerWidth <= 991;
 
     // Di mobile / layar sentuh / prefers-reduced: langsung tampilkan teks 100% tajam tanpa blur
     if (prefersReduced || isTouchOrMobile) {
-=======
-    if (prefersReduced) {
->>>>>>> 2baf4d4ee58ed11e5094e8b6c4b90ef6644f05b9
       document.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
       return;
     }

@@ -5,12 +5,12 @@
    ========================================================================== */
 
 :root {
-  /* 1. Primary Deep Navy Surfaces */
-  --bg-main: #0F1B29;
+  /* 1. Primary Deep Navy Surfaces (Satu Warna Solid dari Atas Sampai Bawah) */
+  --bg-main: #09111B;
   --bg-deep: #09111B;
-  --bg-section: #132235;
-  --bg-card: #16263B;
-  --bg-card-hover: #1D334E;
+  --bg-section: #09111B;
+  --bg-card: #121D2C;
+  --bg-card-hover: #18283D;
   --bg-card-subtle: rgba(255, 255, 255, 0.03);
 
   /* 2. Clean Light Accents & Minimalist Radiance */
