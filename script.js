@@ -26,11 +26,99 @@ document.addEventListener("DOMContentLoaded", () => {
   const cleanVideoId = extractYouTubeId(CONFIG.youtubeVideoId);
 
   // =========================================================================
-  // 2. YOUTUBE VIDEO EMBED CONTROLLER
+  // 2. YOUTUBE VIDEO EMBED & SCROLL AUTOPLAY CONTROLLER
   // =========================================================================
   const videoTimeStatus = document.getElementById("videoTimeStatus");
   if (videoTimeStatus) {
     videoTimeStatus.textContent = "HD 1080P · RESMI";
+  }
+
+  const youtubeIframe = document.getElementById("youtubePlayerIframe");
+  const videoContainer = document.querySelector(".testimoni-video-container");
+
+  if (youtubeIframe && videoContainer) {
+    // Pastikan URL iframe siap dengan enablejsapi=1, mute=1, playsinline=1, rel=0
+    const desiredSrc = `https://www.youtube.com/embed/${cleanVideoId}?enablejsapi=1&mute=1&playsinline=1&rel=0`;
+    if (!youtubeIframe.src || !youtubeIframe.src.includes("enablejsapi=1")) {
+      youtubeIframe.src = desiredSrc;
+    }
+
+    function sendYTCommand(command, args = "") {
+      try {
+        if (youtubeIframe && youtubeIframe.contentWindow) {
+          youtubeIframe.contentWindow.postMessage(
+            JSON.stringify({ event: "command", func: command, args: args }),
+            "*"
+          );
+        }
+      } catch (err) {
+        // Cross-origin safe guard
+      }
+    }
+
+    let isVideoPlaying = false;
+
+    function playYT() {
+      // Browser modern (Chrome/Safari/Edge/iOS/Android) mewajibkan video dalam kondisi mute
+      // agar diizinkan autoplay saat discroll tanpa interaksi tombol khusus.
+      sendYTCommand("mute");
+      sendYTCommand("playVideo");
+      isVideoPlaying = true;
+    }
+
+    function pauseYT() {
+      if (isVideoPlaying) {
+        sendYTCommand("pauseVideo");
+        isVideoPlaying = false;
+      }
+    }
+
+    // Saat iframe selesai termuat, cek apakah posisi saat ini sudah di area video
+    youtubeIframe.addEventListener("load", () => {
+      sendYTCommand("mute");
+      const rect = videoContainer.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+      if (inView) {
+        playYT();
+      }
+    });
+
+    // Deteksi scroll menggunakan IntersectionObserver (efisien dan tidak membebani memori)
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            // Ketika user scroll dan video masuk ke layar (>= 30% area terlihat)
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.28) {
+              playYT();
+            } else if (!entry.isIntersecting || entry.intersectionRatio < 0.15) {
+              // Ketika user scroll menjauh ke atas atau ke bawah
+              pauseYT();
+            }
+          });
+        },
+        {
+          threshold: [0.1, 0.28, 0.5, 0.8]
+        }
+      );
+      observer.observe(videoContainer);
+    } else {
+      // Fallback untuk browser lawas
+      let scrollTimer = null;
+      window.addEventListener("scroll", () => {
+        if (scrollTimer) return;
+        scrollTimer = setTimeout(() => {
+          scrollTimer = null;
+          const rect = videoContainer.getBoundingClientRect();
+          const inView = rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25;
+          if (inView) {
+            playYT();
+          } else {
+            pauseYT();
+          }
+        }, 150);
+      }, { passive: true });
+    }
   }
 
   // =========================================================================
