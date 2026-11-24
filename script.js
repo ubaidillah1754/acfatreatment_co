@@ -4,30 +4,36 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Tandai bahwa JS berhasil dijalankan — CSS fallback opacity: 1 dinonaktifkan
+  document.body.classList.add("js-loaded");
+
+  const isMobileDevice = window.innerWidth <= 768 || ("ontouchstart" in window && window.innerWidth <= 991);
+
   // =========================================================================
-  // 0. LENIS SMOOTH SCROLL CONTROLLER (MOMENTUM & INERTIA SCROLL SEPERTI WEALTHCLUB.ID)
+  // 0. LENIS SMOOTH SCROLL CONTROLLER (DESKTOP ONLY — mobile pakai native scroll)
   // =========================================================================
   let lenisInstance = null;
   function initLenis() {
     if (typeof Lenis === "undefined") return;
+    // Lenis hanya di desktop — di mobile native scroll lebih halus dan bebas bug
+    if (isMobileDevice) return;
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
 
     lenisInstance = new Lenis({
-      duration: 1.5, // 1.5s easing: menghasilkan scroll yang tenang, elegan, dan halus
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing eksponensial
+      duration: 1.5,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 0.85, // Memperlambat wheel agar tidak melompat cepat dan terasa berbobot
+      wheelMultiplier: 0.85,
       touchMultiplier: 1.5,
       infinite: false
     });
 
     window.lenis = lenisInstance;
 
-    // Sinkronisasi dua arah dengan GSAP ScrollTrigger
     if (typeof ScrollTrigger !== "undefined") {
       lenisInstance.on("scroll", ScrollTrigger.update);
     }
@@ -390,6 +396,17 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     });
 
     revealElements.forEach((el) => observer.observe(el));
+
+    // Langsung tampilkan elemen yang sudah ada di viewport saat halaman dimuat
+    // (penting untuk GitHub Pages: CDN kadang lambat, elemen pertama tidak ter-trigger)
+    requestAnimationFrame(() => {
+      revealElements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.98 && rect.bottom > 0) {
+          el.classList.add("is-visible");
+        }
+      });
+    });
   }
 
   initScrollReveal();
@@ -561,8 +578,9 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       }
     }
 
-    // 1. Inisialisasi GSAP ScrollTrigger jika tersedia
-    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+    // 1. Inisialisasi GSAP ScrollTrigger jika tersedia DAN bukan mobile
+    // Di mobile: gunakan CSS scroll-snap (lebih mulus tanpa overhead GSAP pin)
+    if (!isMobileDevice && typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
 
       const scrollDistance = Math.max(window.innerHeight * 2.5, 1800);

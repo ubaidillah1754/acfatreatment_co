@@ -79,6 +79,18 @@ html {
 }
 
 /* ==========================================================================
+   FALLBACK: Jika JS gagal load, semua konten tetap terlihat (GitHub Pages safe)
+   Kelas .js-loaded ditambahkan oleh JS saat berhasil dijalankan.
+   Tanpa kelas itu, semua reveal-item tetap terlihat.
+   ========================================================================== */
+body:not(.js-loaded) .reveal-item {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+}
+
+/* ==========================================================================
    LENIS SMOOTH SCROLL INTEGRATION (Smooth & Weighted Momentum Scroll)
    ========================================================================== */
 html.lenis,
@@ -3164,8 +3176,114 @@ body.modal-open {
 }
 
 /* ==========================================================================
-   DYNAMIC 2-WAY SCROLL REVEAL & HIGH-ENERGY MOTION SYSTEM
+   MOBILE PERFORMANCE & GLITCH FIXES (≤768px)
    ========================================================================== */
+@media (max-width: 768px) {
+  /* Aurora blur terlalu berat di mobile, matikan */
+  body::before,
+  body::after {
+    display: none !important;
+    animation: none !important;
+  }
+
+  /* ── Reveal item: transisi lebih ringan, tanpa blur ── */
+  .reveal-item {
+    transform: translateY(24px) !important;
+    filter: none !important;
+    transition: opacity 0.45s ease, transform 0.45s ease !important;
+    will-change: opacity, transform;
+  }
+  .reveal-item.reveal-left,
+  .reveal-item.reveal-right {
+    transform: translateY(24px) !important;
+  }
+  .reveal-item.reveal-scale {
+    transform: translateY(24px) scale(0.97) !important;
+    filter: none !important;
+  }
+  .reveal-item.is-visible {
+    transform: none !important;
+    filter: none !important;
+  }
+  .reveal-item:not(.is-visible) {
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+    transition-delay: 0s !important;
+  }
+
+  /* ── Gallery 3D: native CSS scroll-snap, matikan transforms berat ── */
+  .gallery-3d-viewport {
+    perspective: none !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .gallery-3d-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .gallery-3d-track {
+    transform: none !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    gap: 20px !important;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+  .gallery-3d-card {
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+    transition: box-shadow 0.3s ease !important;
+  }
+  .gallery-3d-card.is-centered {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Gallery pin wrap: lepas dari GSAP pin di mobile */
+  .gallery-3d-pin-wrap {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  /* Matikan floatSlow animation (berat di mobile) */
+  .floating-tag {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Hover transform: matikan di mobile (tidak ada hover pada touch) */
+  .branch-card:hover,
+  .product-service-card:hover,
+  .timeline-step:hover,
+  .package-card:hover {
+    transform: none !important;
+  }
+
+  /* Scroll progress bar: sembunyikan di mobile (tidak relevan) */
+  /* .scroll-progress-bar { display: none; } */
+
+  /* Pastikan konten hero tetap terlihat */
+  .hero-section {
+    overflow: visible !important;
+  }
+
+  /* Kurangi scale & blur dari reveal-scale agar tidak glitch saat masuk viewport */
+  .manfaat-blur-stage .reveal-item {
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .manfaat-blur-stage .reveal-item.is-visible {
+    opacity: 1 !important;
+  }
+}
 body {
   position: relative;
   overflow-x: hidden;
