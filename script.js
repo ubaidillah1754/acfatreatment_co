@@ -571,5 +571,287 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     window.addEventListener("resize", updateScrollEffects, { passive: true });
     updateScrollEffects();
   })();
+
+  // =========================================================================
+  // 11. EKOSISTEM BISNIS (CAROUSEL & DETAIL MODAL)
+  // =========================================================================
+  (function initEkosistem() {
+    const track = document.getElementById("ekosistemTrack");
+    if (!track) return;
+
+    const cards = Array.from(track.querySelectorAll(".ekosistem-card"));
+    const prevBtn = document.getElementById("ekosistemPrev");
+    const nextBtn = document.getElementById("ekosistemNext");
+    const dotsWrap = document.getElementById("ekosistemDots");
+    const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll(".ekosistem-dot")) : [];
+
+    const modal = document.getElementById("ekosistemModal");
+    const modalBackdrop = document.getElementById("ekosistemModalBackdrop");
+    const modalClose = document.getElementById("ekosistemModalClose");
+    const modalBody = document.getElementById("ekosistemModalBody");
+
+    const EKOSISTEM_DATA = [
+      {
+        tag: "01 / LAYANAN & RETAIL",
+        title: "ATVA Treatment Co & De'atva",
+        desc: "Lini bisnis utama yang bergerak di bidang jasa perawatan bergaransi serta penjualan produk perawatan mandiri untuk pasar produktif.",
+        points: [
+          "Layanan cuci dan reparasi sepatu, tas, topi, helm, koper, hingga aksesoris.",
+          "Memiliki 13 cabang operasional aktif di berbagai kota Indonesia dengan 10.000++ klien.",
+          "Memproduksi lini parfum eksklusif De'atva dengan tagline \"Exclusive Care For Your Favorite Items\"."
+        ]
+      },
+      {
+        tag: "02 / SUPPLIER CHEMICAL",
+        title: "Acfalabs",
+        desc: "Divisi penyedia bahan baku kimia dan formulasi khusus untuk memastikan setiap cabang menghasilkan kualitas perawatan yang seragam.",
+        points: [
+          "Menyuplai cairan pembersih, whitening, unyellowing, hingga bahan pewarnaan (recolour) untuk mitra.",
+          "Menjaga ketersediaan stok bahan baku langsung dari pusat agar mitra tidak bergantung pada pihak ketiga.",
+          "Formulasi disesuaikan untuk keamanan berbagai material sepatu, tas, dan helm."
+        ]
+      },
+      {
+        tag: "03 / MANUFAKTUR MESIN",
+        title: "Acfa Machina",
+        desc: "Unit manufaktur peralatan yang merancang dan memproduksi mesin pendukung operasional cuci dan reparasi sepatu.",
+        points: [
+          "Memproduksi mesin cuci dan peralatan reparasi sepatu khusus kebutuhan gerai.",
+          "Mempercepat durasi pengerjaan treatment di cabang dengan standar hasil yang konsisten.",
+          "Memudahkan upgrade peralatan seiring peningkatan kapasitas order cabang."
+        ]
+      }
+    ];
+
+    let currentIndex = 0;
+    let isDragging = false;
+    let hasDragged = false;
+    let startX = 0;
+    let scrollStart = 0;
+    let isPointerDown = false;
+
+    // Helper: Scroll card to center
+    function scrollToCard(index) {
+      if (index < 0 || index >= cards.length) return;
+      const card = cards[index];
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const trackCenter = track.clientWidth / 2;
+      const targetScroll = cardCenter - trackCenter;
+
+      track.scrollTo({
+        left: targetScroll,
+        behavior: "smooth"
+      });
+      setActiveCard(index);
+    }
+
+    // Helper: Update active card and controls
+    function setActiveCard(index) {
+      if (index < 0 || index >= cards.length) return;
+      currentIndex = index;
+
+      cards.forEach((c, i) => {
+        const isActive = i === index;
+        c.classList.toggle("is-active", isActive);
+        c.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      dots.forEach((dot, i) => {
+        const isActive = i === index;
+        dot.classList.toggle("active", isActive);
+        dot.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      if (prevBtn) prevBtn.disabled = index === 0;
+      if (nextBtn) nextBtn.disabled = index === cards.length - 1;
+    }
+
+    // Detect closest card to center during scroll
+    let scrollTimeout = null;
+    function onTrackScroll() {
+      if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+      scrollTimeout = requestAnimationFrame(() => {
+        const trackCenter = track.scrollLeft + track.clientWidth / 2;
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        cards.forEach((card, i) => {
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+          const diff = Math.abs(cardCenter - trackCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIndex = i;
+          }
+        });
+
+        if (closestIndex !== currentIndex) {
+          setActiveCard(closestIndex);
+        }
+      });
+    }
+
+    track.addEventListener("scroll", onTrackScroll, { passive: true });
+
+    // Desktop Mouse Drag Handling
+    track.addEventListener("mousedown", (e) => {
+      isPointerDown = true;
+      hasDragged = false;
+      startX = e.pageX;
+      scrollStart = track.scrollLeft;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isPointerDown) return;
+      const dx = e.pageX - startX;
+      if (Math.abs(dx) > 6) {
+        hasDragged = true;
+        isDragging = true;
+        track.scrollLeft = scrollStart - dx;
+      }
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!isPointerDown) return;
+      isPointerDown = false;
+      if (hasDragged) {
+        setTimeout(() => {
+          isDragging = false;
+          hasDragged = false;
+        }, 50);
+      }
+    });
+
+    // Touch Swipe Handling for Mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchDragged = false;
+
+    track.addEventListener("touchstart", (e) => {
+      if (!e.touches.length) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchDragged = false;
+    }, { passive: true });
+
+    track.addEventListener("touchmove", (e) => {
+      if (!e.touches.length) return;
+      const dx = Math.abs(e.touches[0].clientX - touchStartX);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY);
+      if (dx > 8 || dy > 8) {
+        touchDragged = true;
+      }
+    }, { passive: true });
+
+    track.addEventListener("touchend", () => {
+      if (touchDragged) {
+        setTimeout(() => {
+          touchDragged = false;
+        }, 80);
+      }
+    }, { passive: true });
+
+    // Card Click: Inactive card -> scroll to center; Active card -> open modal
+    cards.forEach((card, i) => {
+      card.addEventListener("click", (e) => {
+        if (isDragging || hasDragged || touchDragged) {
+          e.preventDefault();
+          return;
+        }
+
+        if (i !== currentIndex) {
+          scrollToCard(i);
+        } else {
+          openModal(i);
+        }
+      });
+    });
+
+    // Arrow Buttons
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        scrollToCard(Math.max(0, currentIndex - 1));
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        scrollToCard(Math.min(cards.length - 1, currentIndex + 1));
+      });
+    }
+
+    // Dot Indicators
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => {
+        scrollToCard(i);
+      });
+    });
+
+    // ==================== MODAL LOGIC ====================
+    function openModal(index) {
+      const data = EKOSISTEM_DATA[index];
+      if (!data || !modal || !modalBody) return;
+
+      const pointsHtml = data.points
+        .map(
+          (pt) => `
+            <li class="modal-point-item">
+              <span class="modal-point-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
+              <span>${pt}</span>
+            </li>`
+        )
+        .join("");
+
+      modalBody.innerHTML = `
+        <span class="modal-header-tag">${data.tag}</span>
+        <h3 class="modal-title">${data.title}</h3>
+        <p class="modal-desc">${data.desc}</p>
+        <ul class="modal-points-list">
+          ${pointsHtml}
+        </ul>
+        <div class="modal-footer-actions">
+          <button type="button" class="modal-btn-dismiss" id="modalDismissBtn">Tutup Rincian</button>
+          <a href="https://wa.me/6282230196689?text=Halo%20Tim%20Kemitraan%2C%20saya%20ingin%20tanya%20lebih%20lanjut%20tentang%20entitas%20${encodeURIComponent(data.title)}" target="_blank" rel="noopener" class="modal-btn-cta">
+            Konsultasi WhatsApp <span>↗</span>
+          </a>
+        </div>
+      `;
+
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+
+      const dismissBtn = modalBody.querySelector("#modalDismissBtn");
+      if (dismissBtn) dismissBtn.addEventListener("click", closeModal);
+
+      if (modalClose) modalClose.focus();
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      if (cards[currentIndex]) cards[currentIndex].focus();
+    }
+
+    if (modalClose) modalClose.addEventListener("click", closeModal);
+    if (modalBackdrop) modalBackdrop.addEventListener("click", closeModal);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal && modal.classList.contains("is-open")) {
+        closeModal();
+      }
+    });
+
+    // Initial positioning
+    window.addEventListener("load", () => {
+      scrollToCard(0);
+    });
+    scrollToCard(0);
+  })();
 });
 
