@@ -389,8 +389,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   (function initManfaatBlur() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Di mobile / prefers-reduced: pastikan semua kata langsung fokus dan terlihat jelas
-    if (prefersReduced || window.innerWidth <= 768) {
+    if (prefersReduced) {
       document.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
       return;
     }
@@ -400,18 +399,20 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
 
     function updateScrollEffects() {
       const vh = window.innerHeight;
+      const isMobile = window.innerWidth <= 768;
 
       items.forEach((item) => {
         const rect = item.getBoundingClientRect();
-        // Item starts entering at 88% of viewport, finishes reveal around 38%
-        const start = vh * 0.88;
-        const end = vh * 0.38;
+        // Item starts entering around 90% of viewport, finishes reveal around 32%
+        const start = isMobile ? vh * 0.90 : vh * 0.88;
+        const end = isMobile ? vh * 0.32 : vh * 0.38;
         const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
 
-        // 1. Efek Ulir: Rotation tilt from 2.5deg to 0deg based on scroll progress
+        // 1. Efek Ulir: Rotation tilt based on scroll progress
         const wordsWrap = item.querySelector(".manfaat-words");
         if (wordsWrap) {
-          const rot = (1 - progress) * 2.5;
+          const maxRot = isMobile ? 1.6 : 2.5;
+          const rot = (1 - progress) * maxRot;
           wordsWrap.style.setProperty("--rot", `${rot.toFixed(2)}deg`);
         }
 
@@ -431,6 +432,16 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         });
       });
     }
+
+    // Touch support for mobile: tapping immediately brings the touched item into full focus
+    items.forEach((item) => {
+      item.addEventListener("touchstart", () => {
+        item.classList.add("is-touched");
+        item.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
+        const wordsWrap = item.querySelector(".manfaat-words");
+        if (wordsWrap) wordsWrap.style.setProperty("--rot", "0deg");
+      }, { passive: true });
+    });
 
     window.addEventListener("scroll", updateScrollEffects, { passive: true });
     window.addEventListener("resize", updateScrollEffects, { passive: true });
