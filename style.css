@@ -78,6 +78,30 @@ html {
   scroll-padding-top: 96px;
 }
 
+/* ==========================================================================
+   LENIS SMOOTH SCROLL INTEGRATION (Smooth & Weighted Momentum Scroll)
+   ========================================================================== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 body {
   background-color: var(--bg-main);
   color: var(--text-body);
@@ -981,7 +1005,6 @@ section[id],
   position: relative;
   border-top: 1px solid var(--border-divider);
   border-bottom: 1px solid var(--border-divider);
-  overflow: hidden;
 }
 
 .section-heading {
@@ -1016,15 +1039,18 @@ section[id],
 .gallery-3d-pin-wrap {
   position: relative;
   width: 100%;
+  height: 100vh;
   min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background: var(--bg-deep);
   overflow: hidden;
-  padding: 40px 0 50px 0;
+  padding: 30px 0;
   box-sizing: border-box;
+  will-change: transform;
 }
 
 .gallery-3d-stage {
@@ -1073,6 +1099,33 @@ section[id],
 .gallery-3d-nav {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.gallery-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  padding: 0;
+}
+
+.gallery-nav-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.08);
+}
+
+.gallery-nav-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
 }
 
 .gallery-3d-counter {
@@ -1104,6 +1157,14 @@ section[id],
   display: flex;
   align-items: center;
   box-sizing: border-box;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.gallery-3d-viewport:active {
+  cursor: grabbing;
 }
 
 .gallery-3d-track {
@@ -2927,8 +2988,10 @@ body.modal-open {
   }
 
   .gallery-3d-pin-wrap {
-    min-height: 85vh;
-    padding: 30px 0 40px 0;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    padding: 20px 0;
   }
 
   .gallery-3d-header {

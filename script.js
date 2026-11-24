@@ -5,6 +5,50 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
+  // 0. LENIS SMOOTH SCROLL CONTROLLER (MOMENTUM & INERTIA SCROLL SEPERTI WEALTHCLUB.ID)
+  // =========================================================================
+  let lenisInstance = null;
+  function initLenis() {
+    if (typeof Lenis === "undefined") return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    lenisInstance = new Lenis({
+      duration: 1.5, // 1.5s easing: menghasilkan scroll yang tenang, elegan, dan halus
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Easing eksponensial
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 0.85, // Memperlambat wheel agar tidak melompat cepat dan terasa berbobot
+      touchMultiplier: 1.5,
+      infinite: false
+    });
+
+    window.lenis = lenisInstance;
+
+    // Sinkronisasi dua arah dengan GSAP ScrollTrigger
+    if (typeof ScrollTrigger !== "undefined") {
+      lenisInstance.on("scroll", ScrollTrigger.update);
+    }
+
+    if (typeof gsap !== "undefined") {
+      gsap.ticker.add((time) => {
+        lenisInstance.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0);
+    } else {
+      function raf(time) {
+        lenisInstance.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+    }
+  }
+
+  initLenis();
+
+  // =========================================================================
   // 1. KONFIGURASI KEMITRAAN & KONTAK
   // =========================================================================
   const CONFIG = {
@@ -146,11 +190,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (daftarSection) {
         const isMobile = window.innerWidth <= 768;
         const navOffset = isMobile ? 85 : 110;
-        const targetPos = daftarSection.getBoundingClientRect().top + window.pageYOffset - navOffset;
-        window.scrollTo({
-          top: targetPos,
-          behavior: "smooth"
-        });
+        if (window.lenis) {
+          window.lenis.scrollTo(daftarSection, {
+            offset: -navOffset,
+            duration: 1.5
+          });
+        } else {
+          const targetPos = daftarSection.getBoundingClientRect().top + window.pageYOffset - navOffset;
+          window.scrollTo({
+            top: targetPos,
+            behavior: "smooth"
+          });
+        }
         setTimeout(() => {
           if (formName) formName.focus();
         }, 600);
@@ -244,13 +295,19 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         e.preventDefault();
         const isMobile = window.innerWidth <= 768;
         const navOffset = isMobile ? 85 : 110;
-        const elementPosition = targetEl.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - navOffset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth"
-        });
+        if (window.lenis) {
+          window.lenis.scrollTo(targetEl, {
+            offset: -navOffset,
+            duration: 1.5
+          });
+        } else {
+          const elementPosition = targetEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
 
         // Tutup menu mobile jika sedang terbuka
         if (mainNav && mainNav.classList.contains("open")) {
@@ -320,8 +377,11 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
         } else {
-          // Reset ketika keluar pandangan agar animasi aktif kembali saat di-scroll ulang
-          entry.target.classList.remove("is-visible");
+          // Hanya reset ketika elemen keluar ke bawah (bukan saat scroll ke bawah melewati elemen)
+          const rect = entry.target.getBoundingClientRect();
+          if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
+            entry.target.classList.remove("is-visible");
+          }
         }
       });
     }, {
@@ -353,9 +413,12 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   (function init3DHorizontalGallery() {
     const pinWrap = document.getElementById("gallery3dPinWrap");
     const track = document.getElementById("gallery3dTrack");
+    const viewport = document.getElementById("gallery3dViewport");
     const cards = document.querySelectorAll(".gallery-3d-card");
     const activeIdxEl = document.getElementById("galleryActiveIdx");
     const progressBar = document.getElementById("galleryProgressBar");
+    const prevBtn = document.getElementById("galleryPrevBtn");
+    const nextBtn = document.getElementById("galleryNextBtn");
 
     if (!pinWrap || !track || !cards.length) return;
 
@@ -365,7 +428,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     // Hitung posisi layout agar Card 1 tepat berada di tengah layar pada awal
     function getLayout() {
       const card = cards[0];
-      const cardWidth = card.offsetWidth;
+      const cardWidth = card.offsetWidth || 340;
       const trackStyle = window.getComputedStyle(track);
       const gap = parseFloat(trackStyle.gap || "52") || 52;
       const cardStep = cardWidth + gap;
@@ -380,6 +443,8 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     }
 
     let layout = getLayout();
+    let currentProgress = 0; // 0 to 1
+    let scrollTriggerInstance = null;
 
     // Hitung efek 3D Coverflow untuk setiap card mengikuti referensi Supah.it
     function updateCardTransforms() {
@@ -443,92 +508,162 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
           activeIdxEl.textContent = numStr;
         }
       }
+
+      // Update tombol nav disable state
+      if (prevBtn) prevBtn.disabled = closestIdx === 0;
+      if (nextBtn) nextBtn.disabled = closestIdx === totalCards - 1;
     }
 
-    // Inisialisasi GSAP ScrollTrigger
+    // Fungsi pusat untuk menggeser track ke progres tertentu (0..1)
+    function applyProgress(prog, animate = false) {
+      currentProgress = Math.max(0, Math.min(1, prog));
+      layout = getLayout();
+      const currentX = -currentProgress * layout.totalDistance;
+
+      if (animate && typeof gsap !== "undefined") {
+        gsap.to(track, {
+          x: currentX,
+          duration: 0.5,
+          ease: "power2.out",
+          onUpdate: updateCardTransforms
+        });
+      } else {
+        if (typeof gsap !== "undefined") {
+          gsap.set(track, { x: currentX });
+        } else {
+          track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+        }
+        updateCardTransforms();
+      }
+
+      if (progressBar) {
+        progressBar.style.width = `${(currentProgress * 100).toFixed(1)}%`;
+      }
+    }
+
+    // Fungsi geser ke indeks card tertentu
+    function goToCard(idx, smooth = true) {
+      if (idx < 0 || idx >= totalCards) return;
+      const targetProg = idx / (totalCards - 1);
+
+      if (scrollTriggerInstance) {
+        const targetScroll = scrollTriggerInstance.start + targetProg * (scrollTriggerInstance.end - scrollTriggerInstance.start);
+        if (window.lenis && smooth) {
+          window.lenis.scrollTo(targetScroll, { duration: 1.0 });
+        } else {
+          window.scrollTo({
+            top: targetScroll,
+            behavior: smooth ? "smooth" : "auto"
+          });
+        }
+      } else {
+        applyProgress(targetProg, smooth);
+      }
+    }
+
+    // 1. Inisialisasi GSAP ScrollTrigger jika tersedia
     if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
 
-      // Jarak scroll vertikal yang proporsional untuk scrubbing 7 kartu
-      const scrollDistance = Math.max(window.innerHeight * 1.8, 1400);
-      let hasCompleted = false;
+      const scrollDistance = Math.max(window.innerHeight * 2.5, 1800);
 
-      const st = ScrollTrigger.create({
+      scrollTriggerInstance = ScrollTrigger.create({
         trigger: pinWrap,
         pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
         start: "top top",
         end: () => `+=${scrollDistance}`,
-        scrub: 1, // Smooth dampening untuk inersia alami
+        scrub: true,
         invalidateOnRefresh: true,
+        fastScrollEnd: true,
+        preventOverlaps: true,
         onUpdate: (self) => {
-          if (hasCompleted) return;
-          layout = getLayout();
-          const currentX = -self.progress * layout.totalDistance;
-          gsap.set(track, { x: currentX });
-          updateCardTransforms();
-
-          if (progressBar) {
-            progressBar.style.width = `${(self.progress * 100).toFixed(1)}%`;
-          }
-        },
-        onLeave: (self) => {
-          if (hasCompleted) return;
-          hasCompleted = true;
-
-          const pinDistance = self.end - self.start;
-          const currentScroll = window.scrollY;
-
-          // 1. Revert SEMUA style pinning GSAP dan hapus spacer secara bersih
-          self.kill(true);
-
-          // 2. Bersihkan seluruh sisa inline style pada pinWrap agar kembali 100% ke alur normal
-          gsap.set(pinWrap, { clearProps: "all" });
-
-          // 3. Kunci posisi galeri mentok di kartu terakhir (Card 07)
-          layout = getLayout();
-          gsap.set(track, { x: -layout.totalDistance });
-          updateCardTransforms();
-
-          if (progressBar) {
-            progressBar.style.width = "100%";
-          }
-
-          // 4. Koreksi posisi scroll seketika agar tidak terjadi lonjakan tampilan
-          window.scrollTo(0, Math.max(0, currentScroll - pinDistance));
-          ScrollTrigger.refresh();
+          applyProgress(self.progress);
         }
       });
+    }
 
-      // Klik langsung pada card mana saja untuk membawa kartu tersebut ke tengah
-      cards.forEach((card, idx) => {
-        card.addEventListener("click", () => {
-          layout = getLayout();
-          const targetX = -idx * layout.cardStep;
-          gsap.to(track, {
-            x: targetX,
-            duration: 0.65,
-            ease: "power2.out",
-            onUpdate: updateCardTransforms
-          });
-          if (progressBar) {
-            progressBar.style.width = `${((idx / (totalCards - 1)) * 100).toFixed(1)}%`;
-          }
-        });
+    // 2. Gesture Drag & Touch Swipe (berfungsi di Desktop mouse & HP touchscreen)
+    let isDown = false;
+    let startX = 0;
+    let startProg = 0;
+    let hasDragged = false;
+    const dragTarget = viewport || track;
+
+    dragTarget.addEventListener("pointerdown", (e) => {
+      isDown = true;
+      hasDragged = false;
+      startX = e.clientX;
+      startProg = currentProgress;
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 6) {
+        hasDragged = true;
+        const progChange = -dx / layout.totalDistance;
+        const newProg = Math.max(0, Math.min(1, startProg + progChange));
+
+        if (scrollTriggerInstance) {
+          const targetScroll = scrollTriggerInstance.start + newProg * (scrollTriggerInstance.end - scrollTriggerInstance.start);
+          window.scrollTo(0, targetScroll);
+        } else {
+          applyProgress(newProg);
+        }
+      }
+    });
+
+    window.addEventListener("pointerup", () => {
+      if (!isDown) return;
+      isDown = false;
+      setTimeout(() => {
+        hasDragged = false;
+      }, 50);
+    });
+
+    // 3. Tombol Panah Prev / Next
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        const curIdx = Math.round(currentProgress * (totalCards - 1));
+        goToCard(Math.max(0, curIdx - 1), true);
       });
+    }
 
-      // Handle Resize Window
-      window.addEventListener("resize", () => {
-        layout = getLayout();
-        ScrollTrigger.refresh();
-        updateCardTransforms();
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        const curIdx = Math.round(currentProgress * (totalCards - 1));
+        goToCard(Math.min(totalCards - 1, curIdx + 1), true);
       });
+    }
 
-      // Render perdana
+    // 4. Klik langsung pada card mana saja
+    cards.forEach((card, idx) => {
+      card.addEventListener("click", () => {
+        if (hasDragged) return;
+        goToCard(idx, true);
+      });
+    });
+
+    // 5. Handle Resize Window
+    window.addEventListener("resize", () => {
       layout = getLayout();
-      updateCardTransforms();
-    } else {
-      // Fallback jika library belum termuat
-      updateCardTransforms();
+      if (scrollTriggerInstance) {
+        ScrollTrigger.refresh();
+      }
+      applyProgress(currentProgress);
+    });
+
+    // Render perdana
+    layout = getLayout();
+    applyProgress(0);
+
+    // Refresh ScrollTrigger setelah layout dan media selesai stabil
+    if (typeof ScrollTrigger !== "undefined") {
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 350);
     }
   })();
 
@@ -888,6 +1023,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       modal.classList.add("is-open");
       modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
+      if (window.lenis) window.lenis.stop();
 
       const dismissBtn = modalBody.querySelector("#modalDismissBtn");
       if (dismissBtn) dismissBtn.addEventListener("click", closeModal);
@@ -900,6 +1036,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       modal.classList.remove("is-open");
       modal.setAttribute("aria-hidden", "true");
       document.body.classList.remove("modal-open");
+      if (window.lenis) window.lenis.start();
       if (cards[currentIndex]) cards[currentIndex].focus();
     }
 
@@ -915,6 +1052,9 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     // Initial positioning
     window.addEventListener("load", () => {
       scrollToCard(0);
+      if (typeof ScrollTrigger !== "undefined") {
+        ScrollTrigger.refresh();
+      }
     });
     scrollToCard(0);
   })();

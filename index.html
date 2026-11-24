@@ -20,7 +20,7 @@
   <!-- Favicon Logo Resmi -->
   <link rel="icon" type="image/png" href="asset/logo.png">
 
-  <link rel="stylesheet" href="style.css?v=29.0">
+  <link rel="stylesheet" href="style.css?v=35.0">
 </head>
 
 <body>
@@ -312,23 +312,36 @@
           </div>
         </div>
       </div> <!-- /section-wrap (Heading & Video Showcase) -->
+    </section> <!-- /testimonials-section -->
 
-      <!-- ==================== 3D HORIZONTAL SCROLL GALLERY (SUPAH.IT COVERFLOW) ==================== -->
-      <div class="gallery-3d-pin-wrap" id="gallery3dPinWrap">
-        <div class="gallery-3d-stage" id="gallery3dStage">
+    <!-- ==================== 3D HORIZONTAL SCROLL GALLERY (SUPAH.IT COVERFLOW) ==================== -->
+    <div class="gallery-3d-pin-wrap" id="gallery3dPinWrap">
+      <div class="gallery-3d-stage" id="gallery3dStage">
 
           <!-- Gallery Sub-Header (Hint & Counter) -->
           <div class="gallery-3d-header">
             <div class="gallery-3d-hint">
               <span class="gallery-hint-pulse"></span>
-              <span>SCROLL KE BAWAH UNTUK MENJELAJAH KISAH MITRA</span>
+              <span>SCROLL KE BAWAH / GESER KARTU UNTUK MENJELAJAH</span>
             </div>
             <div class="gallery-3d-nav">
+              <button class="gallery-nav-btn prev" id="galleryPrevBtn" aria-label="Mitra sebelumnya" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
               <div class="gallery-3d-counter">
                 <span class="active-index" id="galleryActiveIdx">01</span>
                 <span class="counter-divider">/</span>
                 <span class="total-index">07</span>
               </div>
+              <button class="gallery-nav-btn next" id="galleryNextBtn" aria-label="Mitra berikutnya">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -551,9 +564,9 @@
             </div>
           </div>
 
-        </div>
-      </div>
-    </section>
+    </div>
+
+    </div> <!-- /gallery-3d-pin-wrap -->
 
     <!-- ==================== 2.5 MANFAAT KEMITRAAN ==================== -->
     <section class="manfaat-section" id="manfaat" aria-label="Manfaat Kemitraan">
@@ -1277,12 +1290,15 @@
     </div>
   </a>
 
+  <!-- Lenis Smooth Inertia Scroll (Luxurious smooth momentum scroll like wealthclub.id) -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
   <!-- GSAP & ScrollTrigger Core -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <!-- JavaScript -->
-  <script src="script.js?v=23.0"></script>
+  <script src="script.js?v=29.0"></script>
 </body>
 
 </html>
