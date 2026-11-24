@@ -389,7 +389,11 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   (function initManfaatBlur() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
+    // Di mobile / prefers-reduced: pastikan semua kata langsung fokus dan terlihat jelas
+    if (prefersReduced || window.innerWidth <= 768) {
+      document.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
+      return;
+    }
 
     const items = document.querySelectorAll(".manfaat-item");
     if (!items.length) return;

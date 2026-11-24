@@ -2416,20 +2416,28 @@ section[id],
   }
 
   .manfaat-heading {
-    margin-bottom: 48px;
+    margin-bottom: 40px;
   }
 
   .manfaat-blur-stage {
-    gap: 48px;
+    gap: 42px;
+  }
+
+  .manfaat-label {
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .manfaat-words {
     font-size: clamp(20px, 5.6vw, 28px);
-    line-height: 1.32;
+    line-height: 1.35;
+    transform: none !important;
   }
 
+  /* Di layar HP/mobile: teks manfaat harus langsung tajam & 100% terbaca (tanpa blur 0.15 yang bikin hilang) */
   .mw {
-    filter: blur(4px);
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
