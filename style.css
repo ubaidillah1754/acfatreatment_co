@@ -3210,45 +3210,68 @@ body.modal-open {
     transition-delay: 0s !important;
   }
 
-  /* ── Gallery 3D: native CSS scroll-snap, matikan transforms berat ── */
-  .gallery-3d-viewport {
-    perspective: none !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-  .gallery-3d-viewport::-webkit-scrollbar {
-    display: none;
-  }
-  .gallery-3d-track {
-    transform: none !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
-    gap: 20px !important;
-    display: flex;
-    flex-wrap: nowrap;
-  }
-  .gallery-3d-card {
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
-    scroll-snap-align: center;
-    flex-shrink: 0;
-    transition: box-shadow 0.3s ease !important;
-  }
-  .gallery-3d-card.is-centered {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Gallery pin wrap: lepas dari GSAP pin di mobile */
+  /* ── Gallery 3D Mobile: native CSS scroll-snap horizontal ── */
+  /* Pin wrap: lepas dari GSAP pin, tinggi natural */
   .gallery-3d-pin-wrap {
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
     position: relative !important;
     overflow: visible !important;
+    padding: 16px 0 32px !important;
+  }
+
+  /* Viewport: container scroll horizontal */
+  .gallery-3d-viewport {
+    perspective: none !important;
+    overflow-x: scroll !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* PENTING: izinkan swipe horizontal, jangan block dengan pan-y */
+    touch-action: pan-x !important;
+    cursor: default !important;
+    padding: 20px 0 30px !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  .gallery-3d-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Track: flex row, padding kiri-kanan agar kartu pertama & terakhir bisa center */
+  .gallery-3d-track {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    transform: none !important;
+    /* Padding kiri-kanan = (100vw - card-width) / 2 agar snap ke center */
+    padding-left: calc((100vw - 84vw) / 2) !important;
+    padding-right: calc((100vw - 84vw) / 2) !important;
+    gap: 16px !important;
+    will-change: auto !important;
+  }
+
+  /* Card: ukuran 84vw, snap ke center */
+  .gallery-3d-card {
+    flex: 0 0 84vw !important;
+    width: 84vw !important;
+    max-width: 320px !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    flex-shrink: 0 !important;
+    transition: box-shadow 0.35s ease, border-color 0.35s ease !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  /* Kartu yang sedang di tengah: highlight tipis */
+  .gallery-3d-card.is-centered {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.14) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
   }
 
   /* Matikan floatSlow animation (berat di mobile) */
