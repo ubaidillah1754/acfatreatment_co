@@ -3216,9 +3216,8 @@ body.modal-open {
     transition-delay: 0s !important;
   }
 
-  /* ── Gallery 3D Mobile: CSS scroll-snap, layout flex yang benar ── */
+  /* ── Gallery 3D Mobile: CSS scroll-snap, pattern paling reliable ── */
 
-  /* Pin wrap: lepas dari GSAP pin, layout natural */
   .gallery-3d-pin-wrap {
     height: auto !important;
     min-height: auto !important;
@@ -3228,47 +3227,41 @@ body.modal-open {
     padding: 20px 0 36px !important;
   }
 
-  /* Viewport: container scroll horizontal dengan tinggi eksplisit */
+  /* Viewport: BLOCK container — overflow-x scroll yang benar-benar bekerja
+     di semua browser termasuk iOS Safari dan Android Chrome */
   .gallery-3d-viewport {
-    display: flex !important;         /* tetap flex agar track bisa center vertikal */
-    align-items: center !important;
+    display: block !important;        /* block = scroll container paling aman */
     perspective: none !important;
-    overflow-x: scroll !important;
-    overflow-y: visible !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;    /* hidden, bukan visible — ini kunci iOS */
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    touch-action: pan-x !important;  /* izinkan swipe horizontal */
+    touch-action: pan-x !important;
     cursor: default !important;
-    padding: 16px 0 24px !important;
+    padding: 20px 0 !important;
     width: 100% !important;
-    height: auto !important;
-    min-height: 480px !important;     /* pastikan viewport punya tinggi cukup */
     box-sizing: border-box !important;
   }
-  .gallery-3d-viewport::-webkit-scrollbar {
-    display: none;
-  }
-  .gallery-3d-viewport:active {
-    cursor: default !important;
-  }
+  .gallery-3d-viewport::-webkit-scrollbar { display: none; }
+  .gallery-3d-viewport:active { cursor: default !important; }
 
-  /* Track: baris horizontal, padding snap-ke-center */
+  /* Track: flex inline supaya lebar mengikuti total kartu dan overflow ke kanan */
   .gallery-3d-track {
-    display: flex !important;
+    display: inline-flex !important;  /* inline-flex = overflow natural di block parent */
     flex-wrap: nowrap !important;
     align-items: stretch !important;
     transform: none !important;
-    padding-left: 8vw !important;    /* (100vw - 84vw) / 2 = 8vw */
+    padding-left: 8vw !important;     /* (100vw - 84vw)/2 = 8vw, centering kartu pertama */
     padding-right: 8vw !important;
     gap: 16px !important;
     will-change: auto !important;
-    min-width: max-content;          /* track melebar sesuai kartu */
+    vertical-align: top;
   }
 
-  /* Card: lebar 84vw, snap ke tengah */
+  /* Card: 84vw, snap center */
   .gallery-3d-card {
+    display: flex !important;
+    flex-direction: column !important;
     flex: 0 0 84vw !important;
     width: 84vw !important;
     max-width: 340px !important;
@@ -3280,12 +3273,11 @@ body.modal-open {
     scroll-snap-stop: always;
     flex-shrink: 0 !important;
     transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255,255,255,0.08) !important;
   }
-  /* Kartu aktif di tengah: highlight border */
   .gallery-3d-card.is-centered {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.18) !important;
-    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.18) !important;
+    border-color: rgba(255,255,255,0.22) !important;
   }
 
   /* Matikan floatSlow animation (berat di mobile) */

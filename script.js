@@ -4,6 +4,10 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Cegah browser restore posisi scroll lama (penyebab gallery mulai di tengah)
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  window.scrollTo(0, 0);
+
   // Tandai bahwa JS berhasil dijalankan — CSS fallback opacity: 1 dinonaktifkan
   document.body.classList.add("js-loaded");
 
@@ -642,14 +646,6 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         preventOverlaps: true,
         onUpdate: (self) => { applyProgress(self.progress); }
       });
-
-      // Refresh setelah DOM dan font selesai — TANPA langsung pindah progress
-      window.addEventListener("load", () => {
-        requestAnimationFrame(() => {
-          layout = computeLayout(); // hitung ulang setelah font/gambar loaded
-          ScrollTrigger.refresh();
-        });
-      }, { once: true });
     }
 
     // ── 3. Drag mouse (desktop) ──
