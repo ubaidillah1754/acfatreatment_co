@@ -20,7 +20,7 @@
   <!-- Favicon Logo Resmi -->
   <link rel="icon" type="image/png" href="asset/logo.png">
 
-  <link rel="stylesheet" href="style.css?v=27.0">
+  <link rel="stylesheet" href="style.css?v=29.0">
 </head>
 
 <body>
@@ -526,13 +526,37 @@
     <section class="manfaat-section" id="manfaat" aria-label="Manfaat Kemitraan">
       <div class="manfaat-inner">
 
-        <div class="manfaat-heading reveal-item">
-          <p class="eyebrow"><span class="pulse"></span>SAATNYA BISNIS ANDA NAIK KELAS</p>
-          <h2 class="manfaat-title">Keuntungan Eksklusif yang Akan Anda Dapatkan <em>Sebagai Mitra Kami</em></h2>
-          <p class="manfaat-subtitle">Enam pilar nyata yang mendukung pertumbuhan usaha Anda sejak hari pertama.</p>
+        <!-- Animasi Garis Jatuh Bergulir Sesuai Scroll -->
+        <div class="scroll-drop-line-wrap" aria-hidden="true">
+          <div class="scroll-drop-line">
+            <div class="drop-line-glow" id="manfaatLineFill"></div>
+            <div class="drop-line-dot" id="manfaatLineDot"></div>
+          </div>
         </div>
 
         <div class="manfaat-blur-stage" id="manfaatStage" aria-live="polite">
+
+          <!-- Hook Pembuka Ditaruh Tepat di Tengah-Tengah -->
+          <article class="manfaat-item manfaat-hook-item" data-manfaat="hook">
+            <div class="manfaat-words hook-words">
+              <span class="mw dim">Banyak</span> <span class="mw dim">orang</span> <span class="mw dim">bermimpi</span>
+              <span class="mw dim">punya</span> <span class="mw dim">usaha</span> <span class="mw dim">sendiri,</span>
+              <span class="mw dim">tapi</span> <span class="mw dim">akhirnya</span> <span class="mw dim">malah</span>
+              <span class="mw dim">pusing</span> <span class="mw dim">memikirkan</span> <span
+                class="mw dim">urusan</span> <span class="mw dim">teknis</span> <span class="mw dim">setiap</span> <span
+                class="mw dim">hari—bukan</span> <span class="mw dim">karena</span> <span class="mw dim">kurang</span>
+              <span class="mw dim">kerja</span> <span class="mw dim">keras,</span> <span class="mw dim">tapi</span>
+              <span class="mw dim">karena</span> <span class="mw bright">mereka</span> <span
+                class="mw bright">merintis</span> <span class="mw bright">semuanya</span> <span
+                class="mw bright">dari</span> <span class="mw bright">nol</span> <span class="mw bright">tanpa</span>
+              <span class="mw bright">sistem</span> <span class="mw bright">yang</span> <span
+                class="mw bright">teruji.</span>
+            </div>
+            <p class="hook-bridge-caption">
+              Karena itu, kami menyiapkan <strong>6 pilar sistem siap jalan</strong> agar Anda bisa langsung fokus
+              mengembangkan cabang sejak hari pertama.
+            </p>
+          </article>
 
           <article class="manfaat-item" data-manfaat="mesin">
             <h3 class="manfaat-label">Peralatan Siap Pakai <strong>(Mesin)</strong></h3>
@@ -1108,7 +1132,7 @@
   </a>
 
   <!-- JavaScript -->
-  <script src="script.js?v=22.0"></script>
+  <script src="script.js?v=23.0"></script>
 </body>
 
 </html>

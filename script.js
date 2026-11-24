@@ -473,6 +473,35 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   // =========================================================================
+  // 9.5 ANIMASI GARIS JATUH BERGULIR SESUAI SCROLL
+  // =========================================================================
+  (function initDropLine() {
+    const dropLine = document.getElementById("manfaatLineFill");
+    const dropDot = document.getElementById("manfaatLineDot");
+    const dropWrap = document.querySelector(".scroll-drop-line-wrap");
+    if (!dropWrap || !dropLine) return;
+
+    function updateDropLine() {
+      const rect = dropWrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const start = vh * 0.90;
+      const end = vh * 0.35;
+      const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
+
+      const pct = (progress * 100).toFixed(1);
+      dropLine.style.height = `${pct}%`;
+      if (dropDot) {
+        dropDot.style.top = `${pct}%`;
+        dropDot.style.opacity = progress > 0.05 ? "1" : "0";
+      }
+    }
+
+    window.addEventListener("scroll", updateDropLine, { passive: true });
+    window.addEventListener("resize", updateDropLine, { passive: true });
+    updateDropLine();
+  })();
+
+  // =========================================================================
   // 10. MANFAAT BLUR-TO-FOCUS & EFEK ULIR SCROLL ANIMATION (Wealthclub Style)
   // =========================================================================
   (function initManfaatBlur() {
@@ -499,12 +528,16 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         const end = isMobile ? vh * 0.32 : vh * 0.38;
         const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
 
-        // 1. Efek Ulir: Rotation tilt based on scroll progress
+        // 1. Efek Ulir: Rotation tilt based on scroll progress (hook tengah tetap 0deg)
         const wordsWrap = item.querySelector(".manfaat-words");
         if (wordsWrap) {
-          const maxRot = isMobile ? 1.6 : 2.5;
-          const rot = (1 - progress) * maxRot;
-          wordsWrap.style.setProperty("--rot", `${rot.toFixed(2)}deg`);
+          if (item.classList.contains("manfaat-hook-item")) {
+            wordsWrap.style.setProperty("--rot", "0deg");
+          } else {
+            const maxRot = isMobile ? 1.6 : 2.5;
+            const rot = (1 - progress) * maxRot;
+            wordsWrap.style.setProperty("--rot", `${rot.toFixed(2)}deg`);
+          }
         }
 
         // 2. Word-by-word blur-to-focus reveal

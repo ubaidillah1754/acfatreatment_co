@@ -2028,6 +2028,105 @@ section[id],
   margin: 0 auto;
 }
 
+/* ==========================================================================
+   ANIMASI GARIS JATUH BERGULIR SESUAI SCROLL (Scroll-Driven Drop Line)
+   ========================================================================== */
+.scroll-drop-line-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 130px;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.scroll-drop-line {
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  border-radius: 999px;
+}
+
+.drop-line-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.75) 60%, #FFFFFF 100%);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 24px rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  will-change: height;
+}
+
+.drop-line-dot {
+  position: absolute;
+  top: 0%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 7px;
+  height: 7px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #FFFFFF, 0 0 22px rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  will-change: top, opacity;
+}
+
+/* ==========================================================================
+   HOOK PEMBUKA DI TENGAH-TENGAH (Banyak orang bermimpi...)
+   ========================================================================== */
+.manfaat-hook-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  margin: 0 auto 72px auto !important;
+  max-width: 900px;
+  width: 100%;
+}
+
+.manfaat-hook-item .hook-words {
+  font-size: clamp(26px, 4.2vw, 44px);
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: -0.03em;
+  text-align: center !important;
+  margin: 0 auto;
+  transform: none !important;
+  max-width: 880px;
+}
+
+.manfaat-hook-item .mw.dim {
+  color: #8C9CAE;
+}
+
+.manfaat-hook-item .mw.bright {
+  color: #FFFFFF;
+  font-weight: 700;
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.7), 0 0 45px rgba(255, 255, 255, 0.35);
+}
+
+.hook-bridge-caption {
+  max-width: 580px;
+  margin: 1.5rem auto 0;
+  font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
+  text-align: center;
+}
+
+.hook-bridge-caption strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
 .manfaat-heading {
   text-align: left;
   margin-bottom: 84px;
@@ -2420,6 +2519,27 @@ section[id],
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+  }
+
+  .scroll-drop-line-wrap {
+    height: 90px;
+    margin-bottom: 32px;
+  }
+
+  .manfaat-hook-item {
+    margin-bottom: 48px !important;
+  }
+
+  .manfaat-hook-item .hook-words {
+    font-size: clamp(20px, 5.2vw, 26px);
+    line-height: 1.4;
+  }
+
+  .hook-bridge-caption {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-top: 1.2rem;
+    padding: 0 10px;
   }
 
   .manfaat-blur-stage {
