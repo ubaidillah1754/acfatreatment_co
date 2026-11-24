@@ -3026,7 +3026,7 @@ body.modal-open {
   }
 }
 
-/* Fallback menyeluruh untuk semua perangkat sentuh / tablet / mobile */
+/* Penyesuaian untuk perangkat sentuh / tablet / mobile */
 @media (hover: none),
 (max-width: 991px) {
   .manfaat-heading {
@@ -3037,16 +3037,6 @@ body.modal-open {
 
   .manfaat-label {
     color: rgba(255, 255, 255, 0.85) !important;
-  }
-
-  .manfaat-words {
-    transform: none !important;
-  }
-
-  .mw {
-    filter: none !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
 }
 

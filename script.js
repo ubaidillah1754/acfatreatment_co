@@ -506,10 +506,9 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   // =========================================================================
   (function initManfaatBlur() {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const isTouchOrMobile = window.matchMedia("(hover: none)").matches || window.innerWidth <= 991;
 
-    // Di mobile / layar sentuh / prefers-reduced: langsung tampilkan teks 100% tajam tanpa blur
-    if (prefersReduced || isTouchOrMobile) {
+    // Jika pengguna mengaktifkan preferensi kurangi gerakan di OS/browser: tampilkan langsung tajam
+    if (prefersReduced) {
       document.querySelectorAll(".mw").forEach((w) => w.classList.add("mw-focused"));
       return;
     }
