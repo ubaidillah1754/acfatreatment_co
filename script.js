@@ -415,6 +415,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     const track = document.getElementById("gallery3dTrack");
     const viewport = document.getElementById("gallery3dViewport");
     const cards = document.querySelectorAll(".gallery-3d-card");
+    const activeIdxEl = document.getElementById("galleryActiveIdx");
     const progressBar = document.getElementById("galleryProgressBar");
     const prevBtn = document.getElementById("galleryPrevBtn");
     const nextBtn = document.getElementById("galleryNextBtn");
@@ -423,9 +424,6 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
 
     const totalCards = cards.length;
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let currentX = 0;
-    let isUserInteracting = false;
 
     // Hitung posisi layout agar Card 1 tepat berada di tengah layar pada awal
     function getLayout() {
@@ -457,10 +455,19 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       const isMobile = vWidth <= 768;
       const isTablet = vWidth > 768 && vWidth <= 1024;
 
-      cards.forEach((card) => {
+      let closestIdx = 0;
+      let minDistance = Infinity;
+
+      cards.forEach((card, i) => {
         const rect = card.getBoundingClientRect();
         const cardCenter = rect.left + rect.width / 2;
         const distFromCenter = cardCenter - stageCenter;
+        const absDistPx = Math.abs(distFromCenter);
+
+        if (absDistPx < minDistance) {
+          minDistance = absDistPx;
+          closestIdx = i;
+        }
 
         // Jarak ternormalisasi: 0 = tepat di tengah, +1 = ke kanan, -1 = ke kiri
         const normDist = distFromCenter / (vWidth * 0.45);
@@ -473,6 +480,8 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         const maxTransZ = isMobile ? -35 : (isTablet ? -80 : -130);
         const scaleDrop = isMobile ? 0.07 : (isTablet ? 0.16 : 0.22);
 
+        // Card kanan: miring ke arah tengah (negatif rotY, positif rotZ)
+        // Card kiri: miring berlawanan ke arah tengah (positif rotY, negatif rotZ)
         const rotY = -clampedDist * maxRotY;
         const rotZ = clampedDist * maxRotZ;
         const transZ = -Math.min(1.8, absNorm) * Math.abs(maxTransZ);
@@ -491,16 +500,13 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
           card.classList.remove("is-centered");
         }
       });
-    }
 
-    function setGalleryX(x, updateBar = true) {
-      currentX = Math.max(-layout.totalDistance, Math.min(0, x));
-      gsap.set(track, { x: currentX });
-      updateCardTransforms();
-
-      if (updateBar && progressBar && layout.totalDistance > 0) {
-        const pct = (-currentX / layout.totalDistance) * 100;
-        progressBar.style.width = `${Math.max(0, Math.min(100, pct)).toFixed(1)}%`;
+      // Update angka counter (01..07)
+      if (activeIdxEl) {
+        const numStr = String(closestIdx + 1).padStart(2, "0");
+        if (activeIdxEl.textContent !== numStr) {
+          activeIdxEl.textContent = numStr;
+        }
       }
 
       // Update tombol nav disable state
@@ -508,7 +514,6 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       if (nextBtn) nextBtn.disabled = closestIdx === totalCards - 1;
     }
 
-<<<<<<< HEAD
     // Fungsi pusat untuk menggeser track ke progres tertentu (0..1)
     function applyProgress(prog, animate = false) {
       currentProgress = Math.max(0, Math.min(1, prog));
@@ -563,48 +568,17 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       const scrollDistance = Math.max(window.innerHeight * 2.5, 1800);
 
       scrollTriggerInstance = ScrollTrigger.create({
-=======
-    function animateToCard(idx) {
-      layout = getLayout();
-      const targetX = -Math.max(0, Math.min(totalCards - 1, idx)) * layout.cardStep;
-      currentX = targetX;
-      gsap.to(track, {
-        x: targetX,
-        duration: 0.55,
-        ease: "power2.out",
-        onUpdate: updateCardTransforms
-      });
-      if (progressBar && layout.totalDistance > 0) {
-        const pct = (-targetX / layout.totalDistance) * 100;
-        progressBar.style.width = `${Math.max(0, Math.min(100, pct)).toFixed(1)}%`;
-      }
-    }
-
-    // Inisialisasi GSAP ScrollTrigger untuk scroll vertikal halus (ZERO GLITCH)
-    let st = null;
-    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
-
-      const scrollDistance = Math.max(window.innerHeight * 1.6, 1300);
-
-      st = ScrollTrigger.create({
->>>>>>> e5a377fd1f3c5bd9251915f61a62b8f76a4c28de
         trigger: pinWrap,
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
         start: "top top",
         end: () => `+=${scrollDistance}`,
-<<<<<<< HEAD
         scrub: true,
-=======
-        scrub: 1, // Inersia alami
->>>>>>> e5a377fd1f3c5bd9251915f61a62b8f76a4c28de
         invalidateOnRefresh: true,
         fastScrollEnd: true,
         preventOverlaps: true,
         onUpdate: (self) => {
-<<<<<<< HEAD
           applyProgress(self.progress);
         }
       });
@@ -690,126 +664,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 350);
-=======
-          // Hanya sinkronkan dengan scroll vertikal jika pengguna tidak sedang aktif drag/touch
-          if (isUserInteracting) return;
-          layout = getLayout();
-          setGalleryX(-self.progress * layout.totalDistance);
-        }
-      });
->>>>>>> e5a377fd1f3c5bd9251915f61a62b8f76a4c28de
     }
-
-    // =========================================================================
-    // MULTI-INPUT GESTURE CONTROLLER (TOUCHPAD 2 JARI, HP TOUCH, MOUSE DRAG)
-    // =========================================================================
-
-    // 1. LAPTOP TOUCHPAD (2 JARI HORIZONTAL SWIPE - deltaX)
-    pinWrap.addEventListener("wheel", (e) => {
-      // Deteksi usapan 2 jari horizontal pada trackpad
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 4) {
-        if (e.cancelable) e.preventDefault();
-        layout = getLayout();
-        setGalleryX(currentX - e.deltaX * 1.25);
-      }
-    }, { passive: false });
-
-    // 2. SMARTPHONE / TABLET TOUCH (1 JARI SWIPE DI HP)
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchStartCurrentX = 0;
-    let isHorizontalGesture = false;
-
-    pinWrap.addEventListener("touchstart", (e) => {
-      if (e.touches.length !== 1) return;
-      isUserInteracting = true;
-      isHorizontalGesture = false;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      touchStartCurrentX = currentX;
-      layout = getLayout();
-    }, { passive: true });
-
-    pinWrap.addEventListener("touchmove", (e) => {
-      if (e.touches.length !== 1) return;
-      const dx = e.touches[0].clientX - touchStartX;
-      const dy = e.touches[0].clientY - touchStartY;
-
-      if (!isHorizontalGesture && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
-        isHorizontalGesture = true;
-      }
-
-      if (isHorizontalGesture) {
-        if (e.cancelable) e.preventDefault(); // Mencegah layar loncat vertikal saat geser kartu ke samping
-        setGalleryX(touchStartCurrentX + dx * 1.2);
-      }
-    }, { passive: false });
-
-    pinWrap.addEventListener("touchend", () => {
-      isUserInteracting = false;
-      if (isHorizontalGesture) {
-        layout = getLayout();
-        const nearestIdx = Math.round(-currentX / layout.cardStep);
-        animateToCard(nearestIdx);
-      }
-    });
-
-    // 3. DESKTOP / PC MOUSE DRAG
-    let isMouseDown = false;
-    let mouseStartX = 0;
-    let mouseStartCurrentX = 0;
-    let hasMouseDragged = false;
-
-    pinWrap.addEventListener("mousedown", (e) => {
-      if (e.button !== 0) return;
-      isMouseDown = true;
-      isUserInteracting = true;
-      hasMouseDragged = false;
-      mouseStartX = e.clientX;
-      mouseStartCurrentX = currentX;
-      pinWrap.classList.add("is-dragging");
-      layout = getLayout();
-    });
-
-    window.addEventListener("mousemove", (e) => {
-      if (!isMouseDown) return;
-      const dx = e.clientX - mouseStartX;
-      if (Math.abs(dx) > 6) {
-        hasMouseDragged = true;
-      }
-      setGalleryX(mouseStartCurrentX + dx * 1.2);
-    });
-
-    window.addEventListener("mouseup", () => {
-      if (!isMouseDown) return;
-      isMouseDown = false;
-      isUserInteracting = false;
-      pinWrap.classList.remove("is-dragging");
-      if (hasMouseDragged) {
-        layout = getLayout();
-        const nearestIdx = Math.round(-currentX / layout.cardStep);
-        animateToCard(nearestIdx);
-      }
-    });
-
-    // 4. KLIK LANGSUNG PADA CARD MANA SAJA UNTUK FOKUS KE TENGAH
-    cards.forEach((card, idx) => {
-      card.addEventListener("click", () => {
-        if (hasMouseDragged || isHorizontalGesture) return;
-        animateToCard(idx);
-      });
-    });
-
-    // Handle Resize Window
-    window.addEventListener("resize", () => {
-      layout = getLayout();
-      if (st) ScrollTrigger.refresh();
-      setGalleryX(currentX);
-    });
-
-    // Render perdana
-    layout = getLayout();
-    setGalleryX(0);
   })();
 
   // =========================================================================
