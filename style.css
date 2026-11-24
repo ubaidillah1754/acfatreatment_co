@@ -1010,297 +1010,312 @@ section[id],
   margin-top: 10px;
 }
 
-.testimonial-slider-wrap {
+/* ==========================================================================
+   3D HORIZONTAL SCROLL GALLERY (SUPAH.IT 3D CARD STACK / COVERFLOW)
+   ========================================================================== */
+.gallery-3d-pin-wrap {
   position: relative;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg-deep);
+  overflow: hidden;
+  padding: 40px 0 50px 0;
+  box-sizing: border-box;
 }
 
-.slider-controls-row {
+.gallery-3d-stage {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Gallery Header: Hint & Navigation Counter */
+.gallery-3d-header {
+  width: 100%;
+  max-width: 1180px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
-  gap: 16px;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+  z-index: 10;
 }
 
-.slider-hint {
+.gallery-3d-hint {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   color: var(--text-secondary);
 }
 
-.hint-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
+.gallery-hint-pulse {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--border-highlight);
-  color: #FFFFFF;
+  background: #FFFFFF;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.gallery-3d-nav {
+  display: flex;
+  align-items: center;
+}
+
+.gallery-3d-counter {
+  font-family: 'Inter', monospace;
   font-size: 14px;
-}
-
-.slider-arrows {
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
+  padding: 0 6px;
 }
 
-.slider-arrow {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(15, 27, 41, 0.9);
-  border: 1.5px solid var(--border-highlight);
+.gallery-3d-counter .active-index {
   color: #FFFFFF;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(4, 8, 16, 0.6);
-  transition: var(--trans-normal);
+  font-size: 16px;
+  font-weight: 800;
 }
 
-.slider-arrow:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.35);
-  background: #1D334E;
-  box-shadow: 0 4px 16px rgba(4, 8, 16, 0.8);
-  transform: translateY(-2px);
-}
-
-.slider-arrow:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.slider-arrow:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.testimonial-slider-container {
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 16px 8px 28px 8px;
-  cursor: grab;
-  user-select: none;
-  perspective: 1200px;
-  perspective-origin: center center;
-}
-
-.testimonial-slider-container::-webkit-scrollbar {
-  display: none;
-}
-
-.testimonial-slider-container.is-dragging {
-  cursor: grabbing;
-  scroll-behavior: auto;
-  scroll-snap-type: none;
-}
-
-.testimonial-track {
+/* 3D Perspective Viewport */
+.gallery-3d-viewport {
+  position: relative;
+  width: 100%;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  overflow: visible;
+  padding: 40px 0 50px 0;
   display: flex;
-  gap: 24px;
-  width: max-content;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.gallery-3d-track {
+  display: flex;
+  align-items: center;
+  gap: 52px;
   list-style: none;
-  padding: 0;
   margin: 0;
-  perspective: 1200px;
-  perspective-origin: center center;
+  padding: 0;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.testimonial-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-[scroll-animation="z-stack"] {
-  perspective: 1200px;
-  perspective-origin: center center;
-  transform-style: preserve-3d;
-}
-
-[scroll-animation="z-stack"]>li {
-  animation-range: unset;
-}
-
-@keyframes z-stack {
-  entry 0% {
-    transform: translateZ(1000px);
-    opacity: 0;
-  }
-
-  entry 200% {
-    opacity: 0;
-  }
-
-  exit -200% {
-    opacity: 1;
-  }
-
-  exit 100% {
-    transform: translateZ(-1000px);
-    opacity: 0;
-  }
-}
-
-.testimonial-card {
-  flex: 0 0 360px;
-  max-width: 380px;
-  scroll-snap-align: start;
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 28px 24px;
-  border: 1px solid var(--border-primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+/* Supah.it Inspired 3D Card */
+.gallery-3d-card {
+  flex: 0 0 380px;
+  width: 380px;
+  min-height: 490px;
+  background: linear-gradient(165deg, rgba(16, 28, 44, 0.96) 0%, rgba(8, 14, 22, 0.98) 100%);
+  border-radius: 24px;
+  padding: 30px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   position: relative;
-  transform: translateZ(0);
-  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 0.28s ease,
-    z-index 0.28s ease;
-  will-change: transform, box-shadow;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, box-shadow, border-color;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  user-select: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
 }
 
-.testimonial-card:hover {
-  transform: translateZ(28px);
-  z-index: 10;
-  border-color: rgba(255, 255, 255, 0.38);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
+/* Background Subtle Gradient Glow */
+.card-glass-glow {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
 }
 
-.testimonial-card.highlight-mitra {
-  border: 1.5px solid rgba(255, 255, 255, 0.32);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-}
-
-.testimonial-card.highlight-mitra:hover {
-  border-color: #FFFFFF;
-}
-
-.slider-dots {
+/* Card Top: Big Index */
+.card-top-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 10px;
+  justify-content: flex-start;
+  margin-bottom: 22px;
 }
 
-.slider-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
+.card-num {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: rgba(255, 255, 255, 0.22);
+  line-height: 1;
+  transition: color 0.35s ease, text-shadow 0.35s ease;
 }
 
-.slider-dot:hover {
-  background: rgba(255, 255, 255, 0.55);
+/* Profit Banner (Prominent Revenue Highlight) */
+.card-profit-box {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border-left: 3.5px solid #FFFFFF;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.slider-dot.active {
-  width: 26px;
-  border-radius: 10px;
-  background: #FFFFFF;
+.card-profit-box.banner-green {
+  border-left-color: #10B981;
 }
 
-.mitra-profit-banner {
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  margin-bottom: 20px;
-  border-left: 4px solid #FFFFFF;
-}
-
-.mitra-profit-banner.banner-green {
-  background: rgba(255, 255, 255, 0.08);
-  border-left-color: #FFFFFF;
-}
-
-.mitra-profit-banner.banner-yellow {
-  background: rgba(245, 158, 11, 0.08);
+.card-profit-box.banner-yellow {
   border-left-color: #F59E0B;
 }
 
-.profit-label {
+.profit-box-label {
   display: block;
-  font-size: 10.5px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  color: #CBD8E6;
-  letter-spacing: 0.08em;
-  margin-bottom: 3px;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
 }
 
-.profit-value {
+.profit-box-value {
   display: block;
-  font-size: 14.5px;
-  font-weight: 700;
+  font-size: 15.5px;
+  font-weight: 800;
   color: #FFFFFF;
+  letter-spacing: -0.2px;
 }
 
-.mitra-profile {
+.profit-box-value small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* Testimonial Quote */
+.card-quote {
+  font-size: 13.5px;
+  line-height: 1.68;
+  color: rgba(255, 255, 255, 0.82);
+  font-style: normal;
+  margin: 0 0 22px 0;
+  flex: 1;
+}
+
+/* Profile Footer */
+.card-profile {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.mitra-photo {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center 20%;
-  border: 1.5px solid rgba(255, 255, 255, 0.25);
+.avatar-wrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 }
 
-.mitra-name {
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.profile-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
   font-size: 15px;
-  color: var(--text-heading);
-  margin-bottom: 2px;
-}
-
-.mitra-location {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.mitra-rating {
-  font-size: 12px;
-  color: #F59E0B;
   font-weight: 700;
-  margin-top: 2px;
+  color: #FFFFFF;
+  margin: 0 0 2px 0;
 }
 
-.mitra-rating small {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.mitra-quote {
-  font-size: 13.5px;
-  line-height: 1.7;
+.profile-location {
+  font-size: 12px;
   color: var(--text-secondary);
-  font-style: italic;
-  margin-top: auto;
-  border-top: 1px solid var(--border-divider);
-  padding-top: 14px;
+  margin: 0 0 3px 0;
+}
+
+.profile-stars {
+  font-size: 12px;
+  color: #FFB800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rating-note {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Focused / Centered Card Spotlight */
+.gallery-3d-card.is-centered {
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 28px 65px -10px rgba(0, 0, 0, 0.95), 0 0 45px rgba(255, 255, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.gallery-3d-card.is-centered .card-num {
+  color: #FFFFFF;
+  text-shadow: 0 0 25px rgba(255, 255, 255, 0.7);
+}
+
+.gallery-3d-card.is-centered .card-glass-glow {
+  opacity: 1;
+}
+
+/* Gallery Footer Progress Bar */
+.gallery-3d-footer {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.gallery-3d-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.gallery-3d-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.5), #FFFFFF);
+  border-radius: 4px;
+  transition: width 0.1s linear;
 }
 
 /* ==========================================================================
@@ -2312,14 +2327,15 @@ section[id],
     padding-bottom: 50px;
   }
 
-  .testimonial-grid {
-    grid-template-columns: 1fr;
-    max-width: 580px;
-    margin: auto;
+  .gallery-3d-card {
+    flex: 0 0 340px;
+    width: 340px;
+    min-height: 470px;
+    padding: 24px 20px;
   }
 
-  .testimonial-card {
-    flex: 0 0 320px;
+  .gallery-3d-track {
+    gap: 36px;
   }
 
   .branch-grid {
@@ -2468,18 +2484,45 @@ section[id],
     margin-bottom: 35px;
   }
 
-  .testimonial-card {
-    flex: 0 0 calc(100vw - 64px);
-    max-width: 360px;
+  .gallery-3d-pin-wrap {
+    min-height: 85vh;
+    padding: 30px 0 40px 0;
   }
 
-  .slider-hint span {
-    font-size: 11.5px;
+  .gallery-3d-header {
+    margin-bottom: 16px;
+    padding: 0 16px;
   }
 
-  .slider-arrow {
-    width: 38px;
-    height: 38px;
+  .gallery-3d-hint span:last-child {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+  }
+
+  .gallery-3d-card {
+    flex: 0 0 84vw;
+    width: 84vw;
+    max-width: 330px;
+    min-height: 450px;
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .card-num {
+    font-size: 32px;
+  }
+
+  .profit-box-value {
+    font-size: 14.5px;
+  }
+
+  .card-quote {
+    font-size: 13px;
+    margin: 0 0 18px 0;
+  }
+
+  .gallery-3d-track {
+    gap: 24px;
   }
 
   .announcement-text {
@@ -2754,7 +2797,7 @@ body::after {
   }
 }
 
-.testimonial-card.is-visible .profit-value {
+.gallery-3d-card.is-centered .profit-box-value {
   animation: profitGlowPulse 0.8s ease-out;
 }
 

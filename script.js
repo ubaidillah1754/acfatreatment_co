@@ -348,123 +348,189 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   }
 
   // =========================================================================
-  // 8.5. TESTIMONIAL MITRA SLIDER (HORIZONTAL DRAG & ARROW NAVIGATION)
+  // 8.5. 3D HORIZONTAL SCROLL GALLERY (SUPAH.IT 3D CARD STACK / COVERFLOW)
   // =========================================================================
-  const slider = document.getElementById("mitraSlider");
-  const prevBtn = document.getElementById("mitraPrevBtn");
-  const nextBtn = document.getElementById("mitraNextBtn");
-  const dots = document.querySelectorAll(".slider-dot");
+  (function init3DHorizontalGallery() {
+    const pinWrap = document.getElementById("gallery3dPinWrap");
+    const track = document.getElementById("gallery3dTrack");
+    const cards = document.querySelectorAll(".gallery-3d-card");
+    const activeIdxEl = document.getElementById("galleryActiveIdx");
+    const progressBar = document.getElementById("galleryProgressBar");
 
-  if (slider) {
-    const cards = slider.querySelectorAll(".testimonial-card");
+    if (!pinWrap || !track || !cards.length) return;
+
     const totalCards = cards.length;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Menghitung lebar langkah scroll per kartu + gap
-    function getScrollStep() {
-      if (!cards.length) return 380;
+    // Hitung posisi layout agar Card 1 tepat berada di tengah layar pada awal
+    function getLayout() {
       const card = cards[0];
-      const track = slider.querySelector(".testimonial-track");
-      let gap = 24;
-      if (track) {
-        const style = window.getComputedStyle(track);
-        gap = parseInt(style.gap || "24", 10) || 24;
-      }
-      return card.offsetWidth + gap;
+      const cardWidth = card.offsetWidth;
+      const trackStyle = window.getComputedStyle(track);
+      const gap = parseFloat(trackStyle.gap || "52") || 52;
+      const cardStep = cardWidth + gap;
+      const totalDistance = (totalCards - 1) * cardStep;
+
+      // Padding kiri dan kanan agar kartu pertama dan terakhir bisa berhenti tepat di tengah viewport
+      const centerOffset = (window.innerWidth - cardWidth) / 2;
+      track.style.paddingLeft = `${Math.max(0, centerOffset)}px`;
+      track.style.paddingRight = `${Math.max(0, centerOffset)}px`;
+
+      return { cardWidth, cardStep, totalDistance };
     }
 
-    // Update status tombol panah (disable/enable) dan titik pagination aktif
-    function updateSliderState() {
-      const scrollLeft = slider.scrollLeft;
-      const maxScroll = slider.scrollWidth - slider.clientWidth - 8;
+    let layout = getLayout();
 
-      if (prevBtn) {
-        prevBtn.disabled = scrollLeft <= 8;
-      }
-      if (nextBtn) {
-        nextBtn.disabled = scrollLeft >= maxScroll;
-      }
+    // Hitung efek 3D Coverflow untuk setiap card mengikuti referensi Supah.it
+    function updateCardTransforms() {
+      if (prefersReduced) return;
 
-      // Hitung indeks kartu aktif berdasarkan posisi scroll
-      const step = getScrollStep();
-      const activeIdx = Math.min(totalCards - 1, Math.max(0, Math.round(scrollLeft / step)));
+      const vWidth = window.innerWidth;
+      const stageCenter = vWidth / 2;
+      const isMobile = vWidth <= 768;
+      const isTablet = vWidth > 768 && vWidth <= 1024;
 
-      dots.forEach((dot, idx) => {
-        if (idx === activeIdx) {
-          dot.classList.add("active");
+      let closestIdx = 0;
+      let minDistance = Infinity;
+
+      cards.forEach((card, i) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const distFromCenter = cardCenter - stageCenter;
+        const absDistPx = Math.abs(distFromCenter);
+
+        if (absDistPx < minDistance) {
+          minDistance = absDistPx;
+          closestIdx = i;
+        }
+
+        // Jarak ternormalisasi: 0 = tepat di tengah, +1 = ke kanan, -1 = ke kiri
+        const normDist = distFromCenter / (vWidth * 0.45);
+        const clampedDist = Math.max(-2.5, Math.min(2.5, normDist));
+        const absNorm = Math.abs(clampedDist);
+
+        // Parameter 3D sesuai karakteristik Supah.it Coverflow
+        const maxRotY = isMobile ? 8 : (isTablet ? 16 : 24);
+        const maxRotZ = isMobile ? 2 : (isTablet ? 3.8 : 5.5);
+        const maxTransZ = isMobile ? -35 : (isTablet ? -80 : -130);
+        const scaleDrop = isMobile ? 0.07 : (isTablet ? 0.16 : 0.22);
+
+        // Card kanan: miring ke arah tengah (negatif rotY, positif rotZ)
+        // Card kiri: miring berlawanan ke arah tengah (positif rotY, negatif rotZ)
+        const rotY = -clampedDist * maxRotY;
+        const rotZ = clampedDist * maxRotZ;
+        const transZ = -Math.min(1.8, absNorm) * Math.abs(maxTransZ);
+        const scale = Math.max(0.76, 1 - Math.min(1.4, absNorm) * scaleDrop);
+        const opacity = Math.max(0.25, 1 - Math.min(1.5, absNorm) * 0.45);
+        const zIndex = Math.round(50 - Math.min(30, absNorm * 18));
+
+        card.style.transform = `translate3d(0, 0, ${transZ.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg) rotateZ(${rotZ.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+        card.style.opacity = opacity.toFixed(2);
+        card.style.zIndex = zIndex;
+
+        // Card tengah menjadi fokus utama
+        if (absNorm < 0.28) {
+          card.classList.add("is-centered");
         } else {
-          dot.classList.remove("active");
+          card.classList.remove("is-centered");
         }
       });
+
+      // Update angka counter (01..07)
+      if (activeIdxEl) {
+        const numStr = String(closestIdx + 1).padStart(2, "0");
+        if (activeIdxEl.textContent !== numStr) {
+          activeIdxEl.textContent = numStr;
+        }
+      }
     }
 
-    // Klik tombol Next
-    if (nextBtn) {
-      nextBtn.addEventListener("click", () => {
-        const step = getScrollStep();
-        slider.scrollBy({ left: step, behavior: "smooth" });
-      });
-    }
+    // Inisialisasi GSAP ScrollTrigger
+    if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
 
-    // Klik tombol Prev
-    if (prevBtn) {
-      prevBtn.addEventListener("click", () => {
-        const step = getScrollStep();
-        slider.scrollBy({ left: -step, behavior: "smooth" });
-      });
-    }
+      // Jarak scroll vertikal yang proporsional untuk scrubbing 7 kartu
+      const scrollDistance = Math.max(window.innerHeight * 1.8, 1400);
+      let hasCompleted = false;
 
-    // Klik titik pagination
-    dots.forEach((dot) => {
-      dot.addEventListener("click", () => {
-        const idx = parseInt(dot.getAttribute("data-index"), 10) || 0;
-        const step = getScrollStep();
-        slider.scrollTo({ left: idx * step, behavior: "smooth" });
-      });
-    });
+      const st = ScrollTrigger.create({
+        trigger: pinWrap,
+        pin: true,
+        start: "top top",
+        end: () => `+=${scrollDistance}`,
+        scrub: 1, // Smooth dampening untuk inersia alami
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          if (hasCompleted) return;
+          layout = getLayout();
+          const currentX = -self.progress * layout.totalDistance;
+          gsap.set(track, { x: currentX });
+          updateCardTransforms();
 
-    // Throttled scroll listener
-    let isTicking = false;
-    slider.addEventListener("scroll", () => {
-      if (!isTicking) {
-        window.requestAnimationFrame(() => {
-          updateSliderState();
-          isTicking = false;
+          if (progressBar) {
+            progressBar.style.width = `${(self.progress * 100).toFixed(1)}%`;
+          }
+        },
+        onLeave: (self) => {
+          if (hasCompleted) return;
+          hasCompleted = true;
+
+          const pinDistance = self.end - self.start;
+          const currentScroll = window.scrollY;
+
+          // 1. Revert SEMUA style pinning GSAP dan hapus spacer secara bersih
+          self.kill(true);
+
+          // 2. Bersihkan seluruh sisa inline style pada pinWrap agar kembali 100% ke alur normal
+          gsap.set(pinWrap, { clearProps: "all" });
+
+          // 3. Kunci posisi galeri mentok di kartu terakhir (Card 07)
+          layout = getLayout();
+          gsap.set(track, { x: -layout.totalDistance });
+          updateCardTransforms();
+
+          if (progressBar) {
+            progressBar.style.width = "100%";
+          }
+
+          // 4. Koreksi posisi scroll seketika agar tidak terjadi lonjakan tampilan
+          window.scrollTo(0, Math.max(0, currentScroll - pinDistance));
+          ScrollTrigger.refresh();
+        }
+      });
+
+      // Klik langsung pada card mana saja untuk membawa kartu tersebut ke tengah
+      cards.forEach((card, idx) => {
+        card.addEventListener("click", () => {
+          layout = getLayout();
+          const targetX = -idx * layout.cardStep;
+          gsap.to(track, {
+            x: targetX,
+            duration: 0.65,
+            ease: "power2.out",
+            onUpdate: updateCardTransforms
+          });
+          if (progressBar) {
+            progressBar.style.width = `${((idx / (totalCards - 1)) * 100).toFixed(1)}%`;
+          }
         });
-        isTicking = true;
-      }
-    }, { passive: true });
+      });
 
-    // Drag to scroll dengan mouse pada desktop
-    let isMouseDown = false;
-    let startX = 0;
-    let scrollStart = 0;
+      // Handle Resize Window
+      window.addEventListener("resize", () => {
+        layout = getLayout();
+        ScrollTrigger.refresh();
+        updateCardTransforms();
+      });
 
-    slider.addEventListener("mousedown", (e) => {
-      isMouseDown = true;
-      slider.classList.add("is-dragging");
-      startX = e.pageX - slider.offsetLeft;
-      scrollStart = slider.scrollLeft;
-    });
-
-    window.addEventListener("mouseup", () => {
-      if (isMouseDown) {
-        isMouseDown = false;
-        slider.classList.remove("is-dragging");
-      }
-    });
-
-    slider.addEventListener("mousemove", (e) => {
-      if (!isMouseDown) return;
-      e.preventDefault();
-      const x = e.pageX - slider.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      slider.scrollLeft = scrollStart - walk;
-    });
-
-    // Jalankan kalkulasi status awal
-    updateSliderState();
-    window.addEventListener("resize", updateSliderState, { passive: true });
-  }
+      // Render perdana
+      layout = getLayout();
+      updateCardTransforms();
+    } else {
+      // Fallback jika library belum termuat
+      updateCardTransforms();
+    }
+  })();
 
   // =========================================================================
   // 9. TAHUN COPYRIGHT
