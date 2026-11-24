@@ -2445,7 +2445,8 @@ section[id],
 }
 
 /* Fallback menyeluruh untuk semua perangkat sentuh / tablet / mobile */
-@media (hover: none), (max-width: 991px) {
+@media (hover: none),
+(max-width: 991px) {
   .manfaat-heading {
     opacity: 1 !important;
     transform: none !important;
