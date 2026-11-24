@@ -1059,6 +1059,11 @@ section[id],
   justify-content: center;
   align-items: center;
   background: var(--bg-deep);
+  overflow: visible; /* ← bukan hidden: kartu 3D miring perlu ruang di luar batas */
+  padding: 30px 0;
+  box-sizing: border-box;
+  will-change: transform;
+}
   overflow: hidden;
   padding: 30px 0;
   box-sizing: border-box;
@@ -1073,6 +1078,7 @@ section[id],
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: visible; /* ← izinkan kartu 3D miring melampaui batas stage */
 }
 
 /* Gallery Header: Hint & Navigation Counter */

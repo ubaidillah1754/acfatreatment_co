@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Tandai bahwa JS berhasil dijalankan — CSS fallback opacity: 1 dinonaktifkan
   document.body.classList.add("js-loaded");
 
-  const isMobileDevice = window.innerWidth <= 768 || ("ontouchstart" in window && window.innerWidth <= 991);
+  // Deteksi mobile yang akurat: gunakan CSS media query, bukan hanya innerWidth
+  // Ini menghindari salah deteksi pada laptop touchscreen Windows
+  const isMobileDevice = window.matchMedia("(max-width: 768px)").matches;
 
   // =========================================================================
   // 0. LENIS SMOOTH SCROLL CONTROLLER (DESKTOP ONLY — mobile pakai native scroll)
