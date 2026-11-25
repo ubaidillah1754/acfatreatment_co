@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    WEBSITE DESIGN SYSTEM: NAVY DEEP & WHITE GLOW
    Brand: acfatreatment (Dark Premium Investment & Partnership)
    Design Direction: Deep Space Atmosphere, Pure White Glow, Clean & Sophisticated
@@ -76,18 +76,6 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
-}
-
-/* ==========================================================================
-   FALLBACK: Jika JS gagal load, semua konten tetap terlihat (GitHub Pages safe)
-   Kelas .js-loaded ditambahkan oleh JS saat berhasil dijalankan.
-   Tanpa kelas itu, semua reveal-item tetap terlihat.
-   ========================================================================== */
-body:not(.js-loaded) .reveal-item {
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  transition: none !important;
 }
 
 /* ==========================================================================
@@ -1059,11 +1047,6 @@ section[id],
   justify-content: center;
   align-items: center;
   background: var(--bg-deep);
-  overflow: visible; /* ← bukan hidden: kartu 3D miring perlu ruang di luar batas */
-  padding: 30px 0;
-  box-sizing: border-box;
-  will-change: transform;
-}
   overflow: hidden;
   padding: 30px 0;
   box-sizing: border-box;
@@ -1078,7 +1061,6 @@ section[id],
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: visible; /* ← izinkan kartu 3D miring melampaui batas stage */
 }
 
 /* Gallery Header: Hint & Navigation Counter */
@@ -3182,121 +3164,8 @@ body.modal-open {
 }
 
 /* ==========================================================================
-   MOBILE PERFORMANCE & GLITCH FIXES (≤768px)
+   DYNAMIC 2-WAY SCROLL REVEAL & HIGH-ENERGY MOTION SYSTEM
    ========================================================================== */
-@media (max-width: 768px) {
-  /* Aurora blur terlalu berat di mobile, matikan */
-  body::before,
-  body::after {
-    display: none !important;
-    animation: none !important;
-  }
-
-  /* ── Reveal item: transisi lebih ringan, tanpa blur ── */
-  .reveal-item {
-    transform: translateY(24px) !important;
-    filter: none !important;
-    transition: opacity 0.45s ease, transform 0.45s ease !important;
-    will-change: opacity, transform;
-  }
-  .reveal-item.reveal-left,
-  .reveal-item.reveal-right {
-    transform: translateY(24px) !important;
-  }
-  .reveal-item.reveal-scale {
-    transform: translateY(24px) scale(0.97) !important;
-    filter: none !important;
-  }
-  .reveal-item.is-visible {
-    transform: none !important;
-    filter: none !important;
-  }
-  .reveal-item:not(.is-visible) {
-    transition: opacity 0.2s ease, transform 0.2s ease !important;
-    transition-delay: 0s !important;
-  }
-
-  /* -- Gallery 3D Mobile: JS touch carousel (transform-based) -- */
-  .gallery-3d-pin-wrap {
-    height: auto !important;
-    min-height: auto !important;
-    max-height: none !important;
-    position: relative !important;
-    overflow: visible !important;
-    padding: 20px 0 36px !important;
-  }
-  .gallery-3d-viewport {
-    display: block !important;
-    overflow: hidden !important;
-    perspective: none !important;
-    touch-action: pan-y !important;
-    cursor: default !important;
-    padding: 20px 0 !important;
-    width: 100% !important;
-    min-height: 500px !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-  }
-  .gallery-3d-track {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    align-items: stretch !important;
-    gap: 20px !important;
-    will-change: transform !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    transform: translateX(0);
-  }
-  .gallery-3d-card {
-    flex: 0 0 84vw !important;
-    width: 84vw !important;
-    max-width: 320px !important;
-    min-height: 460px !important;
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
-    flex-shrink: 0 !important;
-    transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
-    border-color: rgba(255,255,255,0.08) !important;
-  }
-  .gallery-3d-card.is-centered {
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.18) !important;
-    border-color: rgba(255,255,255,0.22) !important;
-  }
-
-  /* Matikan floatSlow animation (berat di mobile) */
-  .floating-tag {
-    animation: none !important;
-    transform: none !important;
-  }
-
-  /* Hover transform: matikan di mobile (tidak ada hover pada touch) */
-  .branch-card:hover,
-  .product-service-card:hover,
-  .timeline-step:hover,
-  .package-card:hover {
-    transform: none !important;
-  }
-
-  /* Scroll progress bar: sembunyikan di mobile (tidak relevan) */
-  /* .scroll-progress-bar { display: none; } */
-
-  /* Pastikan konten hero tetap terlihat */
-  .hero-section {
-    overflow: visible !important;
-  }
-
-  /* Kurangi scale & blur dari reveal-scale agar tidak glitch saat masuk viewport */
-  .manfaat-blur-stage .reveal-item {
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
-    transition: none !important;
-  }
-  .manfaat-blur-stage .reveal-item.is-visible {
-    opacity: 1 !important;
-  }
-}
 body {
   position: relative;
   overflow-x: hidden;
