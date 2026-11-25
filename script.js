@@ -796,24 +796,29 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
   // 9.5 ANIMASI GARIS JATUH BERGULIR SESUAI SCROLL
   // =========================================================================
   (function initDropLine() {
-    const dropLine = document.getElementById("manfaatLineFill");
-    const dropDot = document.getElementById("manfaatLineDot");
-    const dropWrap = document.querySelector(".scroll-drop-line-wrap");
-    if (!dropWrap || !dropLine) return;
+    const dropWraps = document.querySelectorAll(".scroll-drop-line-wrap");
+    if (!dropWraps.length) return;
 
     function updateDropLine() {
-      const rect = dropWrap.getBoundingClientRect();
       const vh = window.innerHeight;
       const start = vh * 0.90;
       const end = vh * 0.35;
-      const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
 
-      const pct = (progress * 100).toFixed(1);
-      dropLine.style.height = `${pct}%`;
-      if (dropDot) {
-        dropDot.style.top = `${pct}%`;
-        dropDot.style.opacity = progress > 0.05 ? "1" : "0";
-      }
+      dropWraps.forEach((dropWrap) => {
+        const dropLine = dropWrap.querySelector(".drop-line-glow");
+        const dropDot = dropWrap.querySelector(".drop-line-dot");
+        if (!dropLine) return;
+
+        const rect = dropWrap.getBoundingClientRect();
+        const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
+        const pct = (progress * 100).toFixed(1);
+
+        dropLine.style.height = `${pct}%`;
+        if (dropDot) {
+          dropDot.style.top = `${pct}%`;
+          dropDot.style.opacity = progress > 0.05 ? "1" : "0";
+        }
+      });
     }
 
     window.addEventListener("scroll", (function (f) { let q = false; return function () { if (q) return; q = true; requestAnimationFrame(function () { q = false; f(); }); }; })(updateDropLine), { passive: true });
@@ -912,12 +917,12 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
     const EKOSISTEM_DATA = [
       {
         tag: "01 / LAYANAN & RETAIL",
-        title: "ATVA Treatment Co & De'atva",
+        title: "ACFA Treatment Co & De'Acfa",
         desc: "Lini bisnis utama yang bergerak di bidang jasa perawatan bergaransi serta penjualan produk perawatan mandiri untuk pasar produktif.",
         points: [
           "Layanan cuci dan reparasi sepatu, tas, topi, helm, koper, hingga aksesoris.",
           "Memiliki 13 cabang operasional aktif di berbagai kota Indonesia dengan 10.000++ klien.",
-          "Memproduksi lini parfum eksklusif De'atva dengan tagline \"Exclusive Care For Your Favorite Items\"."
+          "Memproduksi lini parfum eksklusif De'Acfa dengan tagline \"Exclusive Care For Your Favorite Items\"."
         ]
       },
       {

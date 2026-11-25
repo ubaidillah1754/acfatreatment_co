@@ -1403,8 +1403,12 @@ section[id],
   background: var(--bg-main);
 }
 
+.portfolio-showcase.section-space {
+  padding-top: 48px;
+}
+
 .showcase-block {
-  margin-bottom: 65px;
+  margin-bottom: 54px;
 }
 
 .showcase-block:last-child {
@@ -1412,7 +1416,7 @@ section[id],
 }
 
 .block-title {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .block-tag {
@@ -1438,47 +1442,97 @@ section[id],
   color: var(--text-secondary);
 }
 
+/* Bento: 1 kartu besar (kiri, 2 baris) + 2 kartu bertumpuk (kanan) */
 .branch-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-rows: repeat(2, minmax(205px, 1fr));
+  gap: 16px;
 }
 
 .branch-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(148, 179, 214, 0.05) 0%, var(--bg-card) 55%);
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-subtle);
   transition: var(--trans-normal);
 }
 
+.branch-card--feature {
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 2;
+}
+
 .branch-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.35);
+  border-color: var(--border-glow);
   box-shadow: var(--shadow-card);
 }
 
-.branch-card img {
-  height: 200px;
+.branch-media {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 115px;
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+/* Foto memudar ke warna kartu di bagian bawah, jadi menyatu dengan teks */
+.branch-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(5, 10, 18, 0) 45%, var(--bg-card) 100%);
+  pointer-events: none;
+}
+
+.branch-media img {
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
   object-fit: cover;
-  filter: brightness(0.92);
+  filter: brightness(0.82) saturate(0.95);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.branch-card:hover .branch-media img {
+  transform: scale(1.04);
 }
 
 .branch-caption {
-  padding: 16px 20px;
+  padding: 4px 10px 8px;
+  margin-top: -28px;
+  position: relative;
+  z-index: 1;
 }
 
 .branch-caption h4 {
-  font-size: 15px;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text-heading);
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .branch-caption p {
-  font-size: 12.5px;
-  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-body);
+}
+
+.branch-card--feature .branch-caption h4 {
+  font-size: 24px;
+}
+
+.branch-card--feature .branch-caption p {
+  font-size: 14px;
+  max-width: 420px;
 }
 
 /* ==========================================================================
@@ -2579,7 +2633,7 @@ body.modal-open {
   background: var(--bg-deep);
   border-top: 1px solid var(--border-divider);
   border-bottom: 1px solid var(--border-divider);
-  padding: 120px 0 140px;
+  padding: 52px 0 72px;
   position: relative;
   overflow: hidden;
 }
@@ -2598,8 +2652,9 @@ body.modal-open {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 130px;
-  margin-bottom: 48px;
+  height: 100px;
+  margin-top: 0;
+  margin-bottom: 24px;
   position: relative;
 }
 
@@ -2886,7 +2941,23 @@ body.modal-open {
 
   .branch-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
     max-width: 500px;
+  }
+
+  .branch-card--feature {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .branch-media,
+  .branch-card--feature .branch-media {
+    flex: none;
+    height: 240px;
+  }
+
+  .branch-card--feature .branch-caption h4 {
+    font-size: 24px;
   }
 
   .product-services-grid {
@@ -3102,7 +3173,7 @@ body.modal-open {
   }
 
   .manfaat-section {
-    padding: 72px 0 96px;
+    padding: 40px 0 56px;
   }
 
   .manfaat-heading {
@@ -3113,8 +3184,8 @@ body.modal-open {
   }
 
   .scroll-drop-line-wrap {
-    height: 90px;
-    margin-bottom: 32px;
+    height: 76px;
+    margin-bottom: 18px;
   }
 
   .manfaat-hook-item {
@@ -3731,6 +3802,10 @@ body::after {
     padding-bottom: 64px;
   }
 
+  .portfolio-showcase.section-space {
+    padding-top: 36px;
+  }
+
   .contact-section {
     padding: 72px 0;
   }
@@ -4074,20 +4149,31 @@ html {
   }
 
   /* Ukuran isi kartu */
-  .branch-card img {
+  .branch-card,
+  .branch-card--feature {
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .branch-media,
+  .branch-card--feature .branch-media {
     height: 170px;
+    border-radius: 14px;
   }
 
   .branch-caption {
-    padding: 14px 16px 16px;
+    padding: 2px 8px 8px;
+    margin-top: -28px;
   }
 
-  .branch-caption h4 {
-    font-size: 14.5px;
+  .branch-caption h4,
+  .branch-card--feature .branch-caption h4 {
+    font-size: 17px;
   }
 
-  .branch-caption p {
-    font-size: 12px;
+  .branch-caption p,
+  .branch-card--feature .branch-caption p {
+    font-size: 12.5px;
     line-height: 1.55;
   }
 
@@ -4154,8 +4240,9 @@ html {
     flex-basis: 82%;
   }
 
-  .branch-card img {
-    height: 160px;
+  .branch-media,
+  .branch-card--feature .branch-media {
+    height: 150px;
   }
 
   .ps-img {
