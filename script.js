@@ -1177,6 +1177,101 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
     });
     scrollToCard(0);
   })();
+
+  // =========================================================================
+  // 12. PAKET KEMITRAAN — SLIDE HORIZONTAL DI MOBILE
+  // =========================================================================
+  (function initPackageMobileSlider() {
+    const track = document.getElementById("packageTrack");
+    if (!track) return;
+
+    const cards = Array.from(track.querySelectorAll(".package-card"));
+    if (!cards.length) return;
+
+    const prevBtn = document.getElementById("packagePrev");
+    const nextBtn = document.getElementById("packageNext");
+    const dotsWrap = document.getElementById("packageDots");
+    const dots = dotsWrap ? Array.from(dotsWrap.querySelectorAll(".ekosistem-dot")) : [];
+    const mobileMQ = window.matchMedia("(max-width: 768px)");
+
+    let currentIdx = 0;
+    let rafId = 0;
+
+    function setActive(idx) {
+      currentIdx = Math.max(0, Math.min(cards.length - 1, idx));
+      cards.forEach((card, i) => {
+        card.classList.toggle("is-active", i === currentIdx);
+      });
+      dots.forEach((dot, i) => {
+        const active = i === currentIdx;
+        dot.classList.toggle("active", active);
+        dot.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      if (prevBtn) prevBtn.disabled = currentIdx === 0;
+      if (nextBtn) nextBtn.disabled = currentIdx === cards.length - 1;
+    }
+
+    function goToSlide(idx, smooth = true) {
+      if (!mobileMQ.matches) return;
+      const targetIdx = Math.max(0, Math.min(cards.length - 1, idx));
+      const card = cards[targetIdx];
+      const left = card.offsetLeft + card.offsetWidth / 2 - track.clientWidth / 2;
+      track.scrollTo({
+        left: Math.max(0, left),
+        behavior: smooth ? "smooth" : "auto"
+      });
+      setActive(targetIdx);
+    }
+
+    function detectClosest() {
+      rafId = 0;
+      if (!mobileMQ.matches) return;
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0;
+      let minDist = Infinity;
+      cards.forEach((card, i) => {
+        const dist = Math.abs(card.offsetLeft + card.offsetWidth / 2 - mid);
+        if (dist < minDist) {
+          minDist = dist;
+          best = i;
+        }
+      });
+      if (best !== currentIdx) setActive(best);
+    }
+
+    track.addEventListener("scroll", () => {
+      if (!mobileMQ.matches) return;
+      if (!rafId) rafId = requestAnimationFrame(detectClosest);
+    }, { passive: true });
+
+    if (prevBtn) prevBtn.addEventListener("click", () => goToSlide(currentIdx - 1));
+    if (nextBtn) nextBtn.addEventListener("click", () => goToSlide(currentIdx + 1));
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => goToSlide(i));
+    });
+
+    cards.forEach((card, i) => {
+      card.addEventListener("click", (e) => {
+        if (!mobileMQ.matches || i === currentIdx) return;
+        if (e.target.closest("a, button")) return;
+        goToSlide(i);
+      });
+    });
+
+    if (mobileMQ.matches) {
+      setActive(0);
+      requestAnimationFrame(() => goToSlide(0, false));
+    }
+
+    if (mobileMQ.addEventListener) {
+      mobileMQ.addEventListener("change", (e) => {
+        if (e.matches) {
+          goToSlide(0, false);
+        }
+      });
+    }
+  })();
 });
 
 // ===== MOBILE FIXES (berjalan saat parsing, sebelum DOMContentLoaded) =====

@@ -114,6 +114,7 @@ body {
   font-size: 15px;
   line-height: 1.65;
   overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -1207,7 +1208,7 @@ section[id],
   flex-direction: column;
   position: relative;
   transform-style: preserve-3d;
-  will-change: transform, opacity, box-shadow, border-color;
+  will-change: transform, opacity;
   transition: border-color 0.35s ease, box-shadow 0.35s ease;
   user-select: none;
   box-sizing: border-box;
@@ -2132,6 +2133,15 @@ body.modal-open {
   border-radius: var(--radius-pill);
   margin-bottom: 12px;
   box-shadow: var(--glow-cyan-sm);
+}
+
+.package-carousel-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.package-mobile-controls {
+  display: none;
 }
 
 .package-grid {
@@ -3202,6 +3212,7 @@ body.modal-open {
 body {
   position: relative;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body::before,
@@ -3619,15 +3630,71 @@ body::after {
     max-width: 100%;
   }
 
-  /* B10. Kartu paket */
-  .package-card {
-    padding: 22px 16px 18px;
+  /* B10. Kartu paket — slide horizontal di mobile */
+  .packages-section > .section-wrap {
+    width: 100%;
+  }
+
+  .packages-section .section-heading {
+    padding: 0 16px;
   }
 
   .package-grid {
-    margin-top: 26px;
-    gap: 26px;
-    max-width: 390px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    max-width: none !important;
+    width: 100% !important;
+    margin: 14px 0 0 !important;
+    padding: 24px calc((100% - min(82vw, 330px)) / 2) 14px !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .package-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .package-card,
+  .package-card.reveal-item {
+    flex: 0 0 min(82vw, 330px) !important;
+    width: min(82vw, 330px) !important;
+    max-width: none !important;
+    scroll-snap-align: center !important;
+    scroll-snap-stop: always !important;
+    padding: 22px 18px 18px !important;
+    opacity: 0.62 !important;
+    filter: none !important;
+    transform: scale(0.95) !important;
+    transition: transform 0.3s ease, opacity 0.3s ease, border-color 0.3s ease !important;
+  }
+
+  .package-card.is-active,
+  .package-card.featured-package.is-active {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+    border-color: rgba(165, 196, 232, 0.34) !important;
+  }
+
+  .package-mobile-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+    padding: 0 16px;
+  }
+
+  .package-nav-btn {
+    width: 40px;
+    height: 40px;
   }
 
   .popular-ribbon {

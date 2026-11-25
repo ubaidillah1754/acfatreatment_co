@@ -20,7 +20,7 @@
   <!-- Favicon Logo Resmi -->
   <link rel="icon" type="image/png" href="asset/logo.png">
 
-  <link rel="stylesheet" href="style.css?v=46.0">
+  <link rel="stylesheet" href="style.css?v=47.0">
 </head>
 
 <body>
@@ -965,7 +965,8 @@
             termasuk paket peralatan kerja, suplai awal chemical, pelatihan, dan materi branding.</p>
         </div>
 
-        <div class="package-grid reveal-group">
+        <div class="package-carousel-wrap">
+          <div class="package-grid reveal-group" id="packageTrack">
           <!-- Paket 1: Basic / Starter -->
           <div class="package-card reveal-item">
             <div class="package-header">
@@ -1142,6 +1143,27 @@
               </a>
             </div>
           </div>
+          </div>
+
+          <div class="package-mobile-controls" aria-label="Navigasi Paket Kemitraan">
+            <button type="button" class="ekosistem-nav-btn package-nav-btn" id="packagePrev" aria-label="Paket sebelumnya" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <div class="ekosistem-dots package-dots" id="packageDots" role="tablist" aria-label="Pilih slide paket">
+              <button type="button" class="ekosistem-dot active" data-index="0" aria-label="Paket Basic" aria-selected="true"></button>
+              <button type="button" class="ekosistem-dot" data-index="1" aria-label="Paket Premium" aria-selected="false"></button>
+              <button type="button" class="ekosistem-dot" data-index="2" aria-label="Paket Master" aria-selected="false"></button>
+            </div>
+            <button type="button" class="ekosistem-nav-btn package-nav-btn" id="packageNext" aria-label="Paket berikutnya">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -1270,7 +1292,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <!-- JavaScript -->
-  <script src="script.js?v=35.0"></script>
+  <script src="script.js?v=36.0"></script>
 </body>
 
 </html>
