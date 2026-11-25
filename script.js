@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ACFATREATMENT — INTERACTIVE SCRIPT
  * Landing Page Kemitraan Bisnis Treatment Sepatu, Helm, Koper, & Stroller
  */
@@ -431,207 +431,203 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   }
 
   // =========================================================================
-  // 8.5. 3D HORIZONTAL SCROLL GALLERY (SUPAH.IT 3D CARD STACK / COVERFLOW)
+  // 8.5. 3D HORIZONTAL SCROLL GALLERY
   // =========================================================================
   (function init3DHorizontalGallery() {
-    const pinWrap = document.getElementById("gallery3dPinWrap");
-    const track = document.getElementById("gallery3dTrack");
-    const viewport = document.getElementById("gallery3dViewport");
-    const cards = document.querySelectorAll(".gallery-3d-card");
-    const activeIdxEl = document.getElementById("galleryActiveIdx");
-    const progressBar = document.getElementById("galleryProgressBar");
-    const prevBtn = document.getElementById("galleryPrevBtn");
-    const nextBtn = document.getElementById("galleryNextBtn");
+    var pinWrap  = document.getElementById("gallery3dPinWrap");
+    var track    = document.getElementById("gallery3dTrack");
+    var viewport = document.getElementById("gallery3dViewport");
+    var cards    = document.querySelectorAll(".gallery-3d-card");
+    var activeIdxEl    = document.getElementById("galleryActiveIdx");
+    var galProgressBar = document.getElementById("galleryProgressBar");
+    var prevBtn  = document.getElementById("galleryPrevBtn");
+    var nextBtn  = document.getElementById("galleryNextBtn");
 
     if (!pinWrap || !track || !cards.length) return;
 
-    const totalCards = cards.length;
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var totalCards = cards.length;
+    var GAP_MOBILE = 20;
 
-    // =====================================================================
-    // MODE MOBILE: CSS scroll-snap murni — tidak ada GSAP, tidak ada JS transform
-    // =====================================================================
+    function setUI(idx) {
+      idx = Math.max(0, Math.min(totalCards - 1, idx));
+      if (activeIdxEl)    activeIdxEl.textContent = String(idx + 1).padStart(2, "0");
+      if (prevBtn)        prevBtn.disabled  = (idx === 0);
+      if (nextBtn)        nextBtn.disabled  = (idx === totalCards - 1);
+      if (galProgressBar) galProgressBar.style.width = ((idx / (totalCards - 1) * 100).toFixed(1)) + "%";
+      cards.forEach(function(c, i) { c.classList.toggle("is-centered", i === idx); });
+    }
+
+    // ── MODE MOBILE: JS touch carousel, transform translateX ──
     if (isMobileDevice) {
+      var curIdx = 0;
+      var translateX = 0;
+      var isDragging = false;
+      var dragStartX = 0;
+      var dragStartTranslate = 0;
+      var velocity = 0;
+      var lastTouchX = 0;
+      var lastTouchTime = 0;
+
       if (!viewport) return;
 
-      let mobileCurrentIdx = 0;
+      viewport.style.overflow = "hidden";
+      viewport.style.touchAction = "pan-y";
+      track.style.willChange = "transform";
 
-      function getMobileCardWidth() {
-        return cards[0] ? cards[0].offsetWidth : window.innerWidth * 0.84;
+      function getCardMetrics() {
+        var cardEl = cards[0];
+        var cardW  = cardEl ? cardEl.offsetWidth : Math.min(window.innerWidth * 0.84, 320);
+        var offset = (viewport.offsetWidth - cardW) / 2;
+        return { cardW: cardW, offset: offset };
       }
 
-      // Update counter & state tombol
-      function updateMobileCounter(idx) {
-        mobileCurrentIdx = Math.max(0, Math.min(totalCards - 1, idx));
-        if (activeIdxEl) activeIdxEl.textContent = String(mobileCurrentIdx + 1).padStart(2, "0");
-        if (prevBtn) prevBtn.disabled = mobileCurrentIdx === 0;
-        if (nextBtn) nextBtn.disabled = mobileCurrentIdx === totalCards - 1;
-        if (progressBar) {
-          progressBar.style.width = `${((mobileCurrentIdx / (totalCards - 1)) * 100).toFixed(1)}%`;
-        }
-        cards.forEach((c, i) => c.classList.toggle("is-centered", i === mobileCurrentIdx));
+      function translateTo(idx, animate) {
+        if (animate === undefined) animate = true;
+        curIdx = Math.max(0, Math.min(totalCards - 1, idx));
+        var metrics = getCardMetrics();
+        translateX = metrics.offset - curIdx * (metrics.cardW + GAP_MOBILE);
+        track.style.transition = animate
+          ? "transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+          : "none";
+        track.style.transform = "translateX(" + translateX + "px)";
+        setUI(curIdx);
       }
 
-      // Scroll viewport ke kartu tertentu
-      function mobileGoTo(idx, smooth = true) {
-        const targetIdx = Math.max(0, Math.min(totalCards - 1, idx));
-        const cardWidth = getMobileCardWidth();
-        const gap = 16; // sesuai CSS gap mobile
-        const paddingLeft = Math.max(0, (viewport.offsetWidth - cardWidth) / 2);
-        const targetLeft = paddingLeft + targetIdx * (cardWidth + gap) - (viewport.offsetWidth - cardWidth) / 2;
-        viewport.scrollTo({ left: Math.max(0, targetIdx * (cardWidth + gap)), behavior: smooth ? "smooth" : "auto" });
-        updateMobileCounter(targetIdx);
-      }
-
-      // Deteksi kartu mana yang sedang di tengah dari scroll event
-      let scrollTimer = null;
-      viewport.addEventListener("scroll", () => {
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-          const cardWidth = getMobileCardWidth();
-          const gap = 16;
-          const idx = Math.round(viewport.scrollLeft / (cardWidth + gap));
-          updateMobileCounter(idx);
-        }, 80);
+      viewport.addEventListener("touchstart", function(e) {
+        isDragging = true;
+        dragStartX = e.touches[0].clientX;
+        dragStartTranslate = translateX;
+        lastTouchX = dragStartX;
+        lastTouchTime = Date.now();
+        velocity = 0;
+        track.style.transition = "none";
       }, { passive: true });
 
-      // Tombol prev / next — scroll satu kartu
-      if (prevBtn) {
-        prevBtn.addEventListener("click", () => mobileGoTo(mobileCurrentIdx - 1));
-      }
-      if (nextBtn) {
-        nextBtn.addEventListener("click", () => mobileGoTo(mobileCurrentIdx + 1));
+      viewport.addEventListener("touchmove", function(e) {
+        if (!isDragging) return;
+        var dx = e.touches[0].clientX - dragStartX;
+        var now = Date.now();
+        velocity = (e.touches[0].clientX - lastTouchX) / (now - lastTouchTime + 1);
+        lastTouchX = e.touches[0].clientX;
+        lastTouchTime = now;
+        var metrics = getCardMetrics();
+        var minX = metrics.offset - (totalCards - 1) * (metrics.cardW + GAP_MOBILE);
+        var maxX = metrics.offset;
+        var newX = dragStartTranslate + dx;
+        if (newX > maxX) newX = maxX + (newX - maxX) * 0.3;
+        if (newX < minX) newX = minX + (newX - minX) * 0.3;
+        track.style.transform = "translateX(" + newX + "px)";
+      }, { passive: true });
+
+      function onDragEnd(endClientX) {
+        if (!isDragging) return;
+        isDragging = false;
+        var dx = endClientX - dragStartX;
+        var metrics = getCardMetrics();
+        var threshold = metrics.cardW * 0.25;
+        var targetIdx = curIdx;
+        if (Math.abs(dx) > threshold || Math.abs(velocity) > 0.4) {
+          if (dx < 0 || velocity < -0.4) targetIdx = curIdx + 1;
+          else targetIdx = curIdx - 1;
+        }
+        translateTo(targetIdx, true);
       }
 
-      // Set posisi awal ke kartu 1 tanpa animasi
-      updateMobileCounter(0);
-      requestAnimationFrame(() => {
-        viewport.scrollLeft = 0;
-      });
+      viewport.addEventListener("touchend", function(e) { onDragEnd(e.changedTouches[0].clientX); }, { passive: true });
+      viewport.addEventListener("touchcancel", function(e) { onDragEnd(e.changedTouches[0] ? e.changedTouches[0].clientX : dragStartX); }, { passive: true });
 
-      return; // Selesai — tidak perlu GSAP di bawah
+      if (prevBtn) prevBtn.addEventListener("click", function() { translateTo(curIdx - 1); });
+      if (nextBtn) nextBtn.addEventListener("click", function() { translateTo(curIdx + 1); });
+
+      requestAnimationFrame(function() { translateTo(0, false); });
+      return;
     }
 
-    // =====================================================================
-    // MODE DESKTOP: GSAP ScrollTrigger pin + 3D Coverflow
-    // Layout dihitung SEKALI di awal & saat resize — TIDAK setiap frame
-    // =====================================================================
+    // ── MODE DESKTOP: GSAP ScrollTrigger pin + 3D Coverflow ──
+    var currentProgress = 0;
+    var scrollTriggerInstance = null;
 
-    // Hitung & set layout padding track — hanya dipanggil sekali / resize
     function computeLayout() {
-      const cardWidth = cards[0].offsetWidth || 380;
-      const trackStyle = window.getComputedStyle(track);
-      const gap = parseFloat(trackStyle.gap) || 52;
-      const cardStep = cardWidth + gap;
-      const totalDistance = (totalCards - 1) * cardStep;
-      const centerOffset = Math.max(0, (window.innerWidth - cardWidth) / 2);
-
-      // Set padding sekali — tidak diulang setiap applyProgress
+      var cardWidth = cards[0].offsetWidth || 380;
+      var trackStyle = window.getComputedStyle(track);
+      var gap = parseFloat(trackStyle.gap) || 52;
+      var cardStep = cardWidth + gap;
+      var totalDistance = (totalCards - 1) * cardStep;
+      var centerOffset = Math.max(0, (window.innerWidth - cardWidth) / 2);
       track.style.paddingLeft  = centerOffset + "px";
       track.style.paddingRight = centerOffset + "px";
-
-      return { cardWidth, cardStep, totalDistance };
+      return { cardWidth: cardWidth, cardStep: cardStep, totalDistance: totalDistance };
     }
 
-    // Layout tersimpan — applyProgress TIDAK memanggil computeLayout
-    let layout = computeLayout();
-    let currentProgress = 0;
-    let scrollTriggerInstance = null;
+    var layout = computeLayout();
 
-    // Update transform 3D Coverflow setiap kartu
     function updateCardTransforms() {
-      if (prefersReduced) return;
+      var vWidth = window.innerWidth;
+      var stageCenter = vWidth / 2;
+      var isTablet = vWidth <= 1024;
+      var closestIdx = 0, minDist = Infinity;
 
-      const vWidth = window.innerWidth;
-      const stageCenter = vWidth / 2;
-      const isTablet = vWidth <= 1024;
+      cards.forEach(function(card, i) {
+        var rect = card.getBoundingClientRect();
+        var cardCenter = rect.left + rect.width / 2;
+        var dist = cardCenter - stageCenter;
+        var absDist = Math.abs(dist);
+        if (absDist < minDist) { minDist = absDist; closestIdx = i; }
 
-      let closestIdx = 0;
-      let minDist = Infinity;
+        var norm    = Math.max(-2.5, Math.min(2.5, dist / (vWidth * 0.45)));
+        var absNorm = Math.abs(norm);
+        var rotY    = -norm * (isTablet ? 16 : 24);
+        var rotZ    =  norm * (isTablet ? 3.8 : 5.5);
+        var transZ  = -Math.min(1.8, absNorm) * (isTablet ? 80 : 130);
+        var scale   = Math.max(0.76, 1 - Math.min(1.4, absNorm) * (isTablet ? 0.16 : 0.22));
+        var opacity = Math.max(0.25, 1 - Math.min(1.5, absNorm) * 0.45);
 
-      cards.forEach((card, i) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const distFromCenter = cardCenter - stageCenter;
-        const absDistPx = Math.abs(distFromCenter);
-
-        if (absDistPx < minDist) { minDist = absDistPx; closestIdx = i; }
-
-        const normDist = distFromCenter / (vWidth * 0.45);
-        const clamped  = Math.max(-2.5, Math.min(2.5, normDist));
-        const absNorm  = Math.abs(clamped);
-
-        const maxRotY   = isTablet ? 16  : 24;
-        const maxRotZ   = isTablet ? 3.8 : 5.5;
-        const maxTransZ = isTablet ? -80 : -130;
-        const scaleDrop = isTablet ? 0.16 : 0.22;
-
-        const rotY  = -clamped * maxRotY;
-        const rotZ  =  clamped * maxRotZ;
-        const transZ = -Math.min(1.8, absNorm) * Math.abs(maxTransZ);
-        const scale  = Math.max(0.76, 1 - Math.min(1.4, absNorm) * scaleDrop);
-        const opac   = Math.max(0.25, 1 - Math.min(1.5, absNorm) * 0.45);
-        const zIdx   = Math.round(50 - Math.min(30, absNorm * 18));
-
-        card.style.transform = `translate3d(0,0,${transZ.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg) rotateZ(${rotZ.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
-        card.style.opacity   = opac.toFixed(2);
-        card.style.zIndex    = zIdx;
+        card.style.transform = "translate3d(0,0," + transZ.toFixed(1) + "px) rotateY(" + rotY.toFixed(2) + "deg) rotateZ(" + rotZ.toFixed(2) + "deg) scale(" + scale.toFixed(3) + ")";
+        card.style.opacity   = opacity.toFixed(2);
+        card.style.zIndex    = String(Math.round(50 - Math.min(30, absNorm * 18)));
         card.classList.toggle("is-centered", absNorm < 0.28);
       });
 
       if (activeIdxEl) {
-        const s = String(closestIdx + 1).padStart(2, "0");
+        var s = String(closestIdx + 1).padStart(2, "0");
         if (activeIdxEl.textContent !== s) activeIdxEl.textContent = s;
       }
-      if (prevBtn) prevBtn.disabled = closestIdx === 0;
-      if (nextBtn) nextBtn.disabled = closestIdx === totalCards - 1;
+      if (prevBtn) prevBtn.disabled = (closestIdx === 0);
+      if (nextBtn) nextBtn.disabled = (closestIdx === totalCards - 1);
     }
 
-    // Geser track ke posisi tertentu (0–1) — layout TIDAK dihitung ulang di sini
-    function applyProgress(prog, animate = false) {
+    function applyProgress(prog) {
       currentProgress = Math.max(0, Math.min(1, prog));
-      const targetX = -currentProgress * layout.totalDistance;
-
-      if (animate && typeof gsap !== "undefined") {
-        gsap.to(track, { x: targetX, duration: 0.5, ease: "power2.out", onUpdate: updateCardTransforms });
+      var targetX = -currentProgress * layout.totalDistance;
+      if (typeof gsap !== "undefined") {
+        gsap.set(track, { x: targetX });
       } else {
-        if (typeof gsap !== "undefined") {
-          gsap.set(track, { x: targetX });
-        } else {
-          track.style.transform = `translate3d(${targetX}px,0,0)`;
-        }
-        updateCardTransforms();
+        track.style.transform = "translate3d(" + targetX + "px,0,0)";
       }
-
-      if (progressBar) progressBar.style.width = `${(currentProgress * 100).toFixed(1)}%`;
+      updateCardTransforms();
+      if (galProgressBar) galProgressBar.style.width = (currentProgress * 100).toFixed(1) + "%";
     }
 
-    // Scroll halaman ke posisi ScrollTrigger yang sesuai kartu tertentu
-    function goToCard(idx, smooth = true) {
+    function goToCard(idx, smooth) {
+      if (smooth === undefined) smooth = true;
       if (idx < 0 || idx >= totalCards) return;
-      const targetProg = idx / (totalCards - 1);
-
+      var prog = idx / (totalCards - 1);
       if (scrollTriggerInstance) {
-        const targetScroll = scrollTriggerInstance.start
-          + targetProg * (scrollTriggerInstance.end - scrollTriggerInstance.start);
-        if (window.lenis && smooth) {
-          window.lenis.scrollTo(targetScroll, { duration: 0.9 });
-        } else {
-          window.scrollTo({ top: targetScroll, behavior: smooth ? "smooth" : "auto" });
-        }
+        var targetScroll = scrollTriggerInstance.start + prog * (scrollTriggerInstance.end - scrollTriggerInstance.start);
+        if (window.lenis && smooth) window.lenis.scrollTo(targetScroll, { duration: 0.9 });
+        else window.scrollTo({ top: targetScroll, behavior: smooth ? "smooth" : "auto" });
       } else {
-        applyProgress(targetProg, smooth);
+        applyProgress(prog);
       }
     }
 
-    // ── 1. Init layout & render kartu 1 di tengah SEBELUM ScrollTrigger dibuat ──
+    // Init: render card 1 di tengah sebelum ScrollTrigger dibuat
+    layout = computeLayout();
     applyProgress(0);
 
-    // ── 2. GSAP ScrollTrigger pin ──
     if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
-
-      const scrollDistance = Math.max(window.innerHeight * 2.5, 1800);
+      var scrollDistance = Math.max(window.innerHeight * 2.5, 1800);
 
       scrollTriggerInstance = ScrollTrigger.create({
         trigger: pinWrap,
@@ -639,65 +635,55 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         pinSpacing: true,
         anticipatePin: 1,
         start: "top top",
-        end: () => `+=${scrollDistance}`,
+        end: function() { return "+=" + scrollDistance; },
         scrub: true,
         invalidateOnRefresh: true,
         fastScrollEnd: true,
         preventOverlaps: true,
-        onUpdate: (self) => { applyProgress(self.progress); }
+        onUpdate: function(self) { applyProgress(self.progress); },
+        onEnter: function() { if (currentProgress < 0.01) applyProgress(0); }
       });
     }
 
-    // ── 3. Drag mouse (desktop) ──
-    let isDown = false, startX = 0, startProg = 0, hasDragged = false;
-    const dragTarget = viewport || track;
+    var isDown = false, dragSX = 0, dragSProg = 0, hasDragged = false;
+    var dragTarget = viewport || track;
 
-    dragTarget.addEventListener("pointerdown", (e) => {
-      isDown = true; hasDragged = false;
-      startX = e.clientX; startProg = currentProgress;
+    dragTarget.addEventListener("pointerdown", function(e) {
+      isDown = true; hasDragged = false; dragSX = e.clientX; dragSProg = currentProgress;
     });
-    window.addEventListener("pointermove", (e) => {
+    window.addEventListener("pointermove", function(e) {
       if (!isDown) return;
-      const dx = e.clientX - startX;
+      var dx = e.clientX - dragSX;
       if (Math.abs(dx) > 6) {
         hasDragged = true;
-        const newProg = Math.max(0, Math.min(1, startProg - dx / layout.totalDistance));
-        if (scrollTriggerInstance) {
-          window.scrollTo(0, scrollTriggerInstance.start
-            + newProg * (scrollTriggerInstance.end - scrollTriggerInstance.start));
-        } else {
-          applyProgress(newProg);
-        }
+        var np = Math.max(0, Math.min(1, dragSProg - dx / layout.totalDistance));
+        if (scrollTriggerInstance) window.scrollTo(0, scrollTriggerInstance.start + np * (scrollTriggerInstance.end - scrollTriggerInstance.start));
+        else applyProgress(np);
       }
     });
-    window.addEventListener("pointerup", () => {
+    window.addEventListener("pointerup", function() {
       if (!isDown) return;
       isDown = false;
-      setTimeout(() => { hasDragged = false; }, 50);
+      setTimeout(function() { hasDragged = false; }, 50);
     });
 
-    // ── 4. Tombol prev / next ──
-    if (prevBtn) prevBtn.addEventListener("click", () => {
+    if (prevBtn) prevBtn.addEventListener("click", function() {
       goToCard(Math.max(0, Math.round(currentProgress * (totalCards - 1)) - 1), true);
     });
-    if (nextBtn) nextBtn.addEventListener("click", () => {
+    if (nextBtn) nextBtn.addEventListener("click", function() {
       goToCard(Math.min(totalCards - 1, Math.round(currentProgress * (totalCards - 1)) + 1), true);
     });
 
-    // ── 5. Klik card ──
-    cards.forEach((card, idx) => {
-      card.addEventListener("click", () => { if (!hasDragged) goToCard(idx, true); });
+    cards.forEach(function(card, idx) {
+      card.addEventListener("click", function() { if (!hasDragged) goToCard(idx, true); });
     });
 
-    // ── 6. Resize ──
-    window.addEventListener("resize", () => {
+    window.addEventListener("resize", function() {
       layout = computeLayout();
       if (scrollTriggerInstance) ScrollTrigger.refresh();
       else applyProgress(currentProgress);
     });
   })();
-
-  // =========================================================================
   // 9. TAHUN COPYRIGHT
   // =========================================================================
   const yearEl = document.getElementById("year");

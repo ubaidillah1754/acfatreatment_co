@@ -1,4 +1,4 @@
-/* ==========================================================================
+﻿/* ==========================================================================
    WEBSITE DESIGN SYSTEM: NAVY DEEP & WHITE GLOW
    Brand: acfatreatment (Dark Premium Investment & Partnership)
    Design Direction: Deep Space Atmosphere, Pure White Glow, Clean & Sophisticated
@@ -3216,8 +3216,7 @@ body.modal-open {
     transition-delay: 0s !important;
   }
 
-  /* ── Gallery 3D Mobile: CSS scroll-snap, pattern paling reliable ── */
-
+  /* -- Gallery 3D Mobile: JS touch carousel (transform-based) -- */
   .gallery-3d-pin-wrap {
     height: auto !important;
     min-height: auto !important;
@@ -3226,51 +3225,36 @@ body.modal-open {
     overflow: visible !important;
     padding: 20px 0 36px !important;
   }
-
-  /* Viewport: BLOCK container — overflow-x scroll yang benar-benar bekerja
-     di semua browser termasuk iOS Safari dan Android Chrome */
   .gallery-3d-viewport {
-    display: block !important;        /* block = scroll container paling aman */
+    display: block !important;
+    overflow: hidden !important;
     perspective: none !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;    /* hidden, bukan visible — ini kunci iOS */
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    touch-action: pan-x !important;
+    touch-action: pan-y !important;
     cursor: default !important;
     padding: 20px 0 !important;
     width: 100% !important;
+    min-height: 500px !important;
+    position: relative !important;
     box-sizing: border-box !important;
   }
-  .gallery-3d-viewport::-webkit-scrollbar { display: none; }
-  .gallery-3d-viewport:active { cursor: default !important; }
-
-  /* Track: flex inline supaya lebar mengikuti total kartu dan overflow ke kanan */
   .gallery-3d-track {
-    display: inline-flex !important;  /* inline-flex = overflow natural di block parent */
+    display: flex !important;
     flex-wrap: nowrap !important;
     align-items: stretch !important;
-    transform: none !important;
-    padding-left: 8vw !important;     /* (100vw - 84vw)/2 = 8vw, centering kartu pertama */
-    padding-right: 8vw !important;
-    gap: 16px !important;
-    will-change: auto !important;
-    vertical-align: top;
+    gap: 20px !important;
+    will-change: transform !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    transform: translateX(0);
   }
-
-  /* Card: 84vw, snap center */
   .gallery-3d-card {
-    display: flex !important;
-    flex-direction: column !important;
     flex: 0 0 84vw !important;
     width: 84vw !important;
-    max-width: 340px !important;
+    max-width: 320px !important;
     min-height: 460px !important;
     transform: none !important;
     opacity: 1 !important;
     filter: none !important;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
     flex-shrink: 0 !important;
     transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
     border-color: rgba(255,255,255,0.08) !important;
