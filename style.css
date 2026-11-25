@@ -3996,3 +3996,169 @@ html {
     zoom: 1;
   }
 }
+
+/* ==========================================================================
+   SLIDER MOBILE: Gerai & Cabang + Layanan & Chemical
+   Kartu bisa digeser (swipe) ke samping di layar HP/tablet kecil
+   ========================================================================== */
+.slider-dots {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .showcase-block {
+    margin-bottom: 48px;
+  }
+
+  .block-title {
+    margin-bottom: 20px;
+  }
+
+  .block-title h3 {
+    font-size: 20px;
+    line-height: 1.3;
+  }
+
+  .block-title p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* Track slider: full-bleed sampai tepi layar, snap per kartu */
+  .branch-grid.mobile-slider,
+  .product-services-grid.mobile-slider {
+    display: flex;
+    flex-wrap: nowrap;
+    grid-template-columns: none;
+    max-width: none;
+    gap: 14px;
+    margin-left: -24px;
+    margin-right: -24px;
+    padding: 6px 24px 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 24px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+    scrollbar-width: none;
+  }
+
+  .branch-grid.mobile-slider::-webkit-scrollbar,
+  .product-services-grid.mobile-slider::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Kartu: lebar ~78% layar supaya kartu berikutnya mengintip */
+  .branch-grid.mobile-slider .branch-card,
+  .product-services-grid.mobile-slider .product-service-card {
+    flex: 0 0 78%;
+    max-width: 320px;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* Kartu di luar layar harus langsung tampil (reveal vertikal tidak berlaku di sini) */
+  .branch-grid.reveal-group .reveal-item,
+  .product-services-grid.reveal-group .reveal-item {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition-delay: 0s !important;
+  }
+
+  .branch-card:hover,
+  .product-service-card:hover {
+    transform: none;
+  }
+
+  /* Ukuran isi kartu */
+  .branch-card img {
+    height: 170px;
+  }
+
+  .branch-caption {
+    padding: 14px 16px 16px;
+  }
+
+  .branch-caption h4 {
+    font-size: 14.5px;
+  }
+
+  .branch-caption p {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .ps-img {
+    height: 140px;
+  }
+
+  .ps-content {
+    padding: 14px 16px 16px;
+  }
+
+  .ps-icon {
+    font-size: 22px;
+  }
+
+  .ps-content h4 {
+    font-size: 15px;
+  }
+
+  .ps-content p {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* Indikator titik */
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .slider-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .slider-dots span.active {
+    width: 24px;
+    border-radius: 10px;
+    background: #FFFFFF;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+}
+
+@media (max-width: 480px) {
+
+  .branch-grid.mobile-slider,
+  .product-services-grid.mobile-slider {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    scroll-padding-left: 16px;
+    gap: 12px;
+  }
+
+  .branch-grid.mobile-slider .branch-card,
+  .product-services-grid.mobile-slider .product-service-card {
+    flex-basis: 82%;
+  }
+
+  .branch-card img {
+    height: 160px;
+  }
+
+  .ps-img {
+    height: 130px;
+  }
+}

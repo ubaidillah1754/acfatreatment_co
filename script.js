@@ -1336,3 +1336,47 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
     closeMenu();
   });
 })();
+
+
+// =========================================================================
+// SLIDER MOBILE (Gerai & Cabang, Layanan & Chemical): indikator titik
+// =========================================================================
+(function () {
+  var sliders = document.querySelectorAll("[data-slider]");
+  sliders.forEach(function (track) {
+    var dotsWrap = track.nextElementSibling;
+    if (!dotsWrap || !dotsWrap.classList.contains("slider-dots")) return;
+    var cards = Array.prototype.slice.call(track.children);
+    var dots = [];
+
+    cards.forEach(function () {
+      var d = document.createElement("span");
+      dotsWrap.appendChild(d);
+      dots.push(d);
+    });
+
+    function update() {
+      var max = track.scrollWidth - track.clientWidth;
+      var idx = 0;
+      if (max > 0 && track.scrollLeft >= max - 4) {
+        idx = cards.length - 1;
+      } else {
+        var best = Infinity;
+        cards.forEach(function (c, i) {
+          var dist = Math.abs(c.offsetLeft - track.offsetLeft - track.scrollLeft - parseFloat(getComputedStyle(track).paddingLeft || 0));
+          if (dist < best) { best = dist; idx = i; }
+        });
+      }
+      dots.forEach(function (d, i) { d.classList.toggle("active", i === idx); });
+    }
+
+    var ticking = false;
+    track.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { update(); ticking = false; });
+    }, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  });
+})();
