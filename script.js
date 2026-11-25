@@ -677,13 +677,10 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         trigger: pinWrap,
         pin: true,
         pinSpacing: true,
-        anticipatePin: 1,
         start: "top top",
         end: () => `+=${scrollDistance}`,
         scrub: true,
         invalidateOnRefresh: true,
-        fastScrollEnd: true,
-        preventOverlaps: true,
         onUpdate: (self) => {
           applyProgress(self.progress);
         }
