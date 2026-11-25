@@ -4,6 +4,9 @@
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Faktor perbesaran halaman di layar lebar (CSS zoom pada <html>, 1 = normal)
+  const pageZoom = () => parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+
   // =========================================================================
   // 0. LENIS SMOOTH SCROLL CONTROLLER (MOMENTUM & INERTIA SCROLL SEPERTI WEALTHCLUB.ID)
   // =========================================================================
@@ -189,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (daftarSection) {
         const isMobile = window.innerWidth <= 768;
-        const navOffset = isMobile ? 85 : 110;
+        const navOffset = (isMobile ? 85 : 110) * pageZoom();
         if (window.lenis) {
           window.lenis.scrollTo(daftarSection, {
             offset: -navOffset,
@@ -294,7 +297,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       if (targetEl) {
         e.preventDefault();
         const isMobile = window.innerWidth <= 768;
-        const navOffset = isMobile ? 85 : 110;
+        const navOffset = (isMobile ? 85 : 110) * pageZoom();
         if (window.lenis) {
           window.lenis.scrollTo(targetEl, {
             offset: -navOffset,
@@ -331,10 +334,11 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   const headerLinks = document.querySelectorAll(".nav .nav-link");
 
   window.addEventListener("scroll", () => {
-    const scrollPos = window.scrollY + 120;
+    const scrollPos = window.scrollY + 120 * pageZoom();
     sections.forEach((section) => {
-      const top = section.offsetTop;
-      const height = section.offsetHeight;
+      const secRect = section.getBoundingClientRect();
+      const top = secRect.top + window.scrollY;
+      const height = secRect.height;
       const id = section.getAttribute("id");
 
       if (scrollPos >= top && scrollPos < top + height) {
@@ -425,6 +429,108 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     const totalCards = cards.length;
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // =====================================================================
+    // MODE HP / LAYAR SENTUH: carousel geser native (tanpa pin & scrub)
+    // =====================================================================
+    const nativeMQ = window.matchMedia("(max-width: 768px), (hover: none) and (pointer: coarse)");
+
+    function initNativeCarousel() {
+      pinWrap.classList.add("gallery-native");
+
+      const hintText = pinWrap.querySelector(".gallery-3d-hint span:last-child");
+      if (hintText) hintText.textContent = "GESER KARTU UNTUK MENJELAJAH";
+
+      const scroller = viewport || track;
+      let current = 0;
+      let rafId = 0;
+
+      function centerOf(i) {
+        return cards[i].offsetLeft + cards[i].offsetWidth / 2;
+      }
+
+      function update() {
+        rafId = 0;
+        const mid = scroller.scrollLeft + scroller.clientWidth / 2;
+        let best = 0;
+        let min = Infinity;
+        cards.forEach((c, i) => {
+          const d = Math.abs(centerOf(i) - mid);
+          if (d < min) { min = d; best = i; }
+        });
+        current = best;
+
+        cards.forEach((c, i) => c.classList.toggle("is-centered", i === best));
+
+        if (activeIdxEl) {
+          const s = String(best + 1).padStart(2, "0");
+          if (activeIdxEl.textContent !== s) activeIdxEl.textContent = s;
+        }
+        if (prevBtn) prevBtn.disabled = best === 0;
+        if (nextBtn) nextBtn.disabled = best === totalCards - 1;
+
+        if (progressBar) {
+          const max = scroller.scrollWidth - scroller.clientWidth;
+          const p = max > 0 ? Math.min(1, Math.max(0, scroller.scrollLeft / max)) : 0;
+          progressBar.style.width = `${(p * 100).toFixed(1)}%`;
+        }
+      }
+
+      function queueUpdate() {
+        if (!rafId) rafId = requestAnimationFrame(update);
+      }
+
+      function goTo(i) {
+        if (i < 0 || i >= totalCards) return;
+        scroller.scrollTo({
+          left: centerOf(i) - scroller.clientWidth / 2,
+          behavior: prefersReduced ? "auto" : "smooth"
+        });
+      }
+
+      scroller.addEventListener("scroll", queueUpdate, { passive: true });
+      window.addEventListener("resize", queueUpdate, { passive: true });
+      window.addEventListener("load", () => { goTo(0); queueUpdate(); });
+
+      if (prevBtn) prevBtn.addEventListener("click", () => goTo(current - 1));
+      if (nextBtn) nextBtn.addEventListener("click", () => goTo(current + 1));
+      cards.forEach((card, i) => {
+        card.addEventListener("click", () => { if (i !== current) goTo(i); });
+      });
+
+      // Jika layar berpindah mode (mis. DevTools / rotasi ke desktop), muat ulang agar mode benar
+      const onModeChange = () => location.reload();
+      if (nativeMQ.addEventListener) nativeMQ.addEventListener("change", onModeChange);
+
+      update();
+    }
+
+    if (nativeMQ.matches) {
+      initNativeCarousel();
+      return;
+    }
+
+    // ----- Zoom layar lebar: stage galeri di-zoom sendiri agar pin tetap 1x -----
+    const stageEl = document.getElementById("gallery3dStage");
+    const baseZoom = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--z")) || 1;
+    const getGZ = () => (stageEl && parseFloat(getComputedStyle(stageEl).zoom)) || 1;
+
+    function fitStageZoom() {
+      if (!stageEl) return;
+      const z = baseZoom();
+      if (z <= 1) { stageEl.style.zoom = ""; pinWrap.style.paddingTop = ""; pinWrap.style.paddingBottom = ""; return; }
+      // Ruang di bawah navbar melayang (ikut membesar bersama zoom halaman)
+      const topClear = Math.round(78 * z + 10);
+      pinWrap.style.paddingTop = `${topClear}px`;
+      pinWrap.style.paddingBottom = "30px";
+      stageEl.style.zoom = String(z);
+      const avail = window.innerHeight - topClear - 30;
+      const natural = stageEl.offsetHeight;
+      if (natural * z > avail) {
+        stageEl.style.zoom = Math.max(1, avail / natural).toFixed(3);
+      }
+    }
+    fitStageZoom();
+
     // Hitung posisi layout agar Card 1 tepat berada di tengah layar pada awal
     function getLayout() {
       const card = cards[0];
@@ -435,7 +541,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       const totalDistance = (totalCards - 1) * cardStep;
 
       // Padding kiri dan kanan agar kartu pertama dan terakhir bisa berhenti tepat di tengah viewport
-      const centerOffset = (window.innerWidth - cardWidth) / 2;
+      const centerOffset = (window.innerWidth / getGZ() - cardWidth) / 2;
       track.style.paddingLeft = `${Math.max(0, centerOffset)}px`;
       track.style.paddingRight = `${Math.max(0, centerOffset)}px`;
 
@@ -603,7 +709,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       const dx = e.clientX - startX;
       if (Math.abs(dx) > 6) {
         hasDragged = true;
-        const progChange = -dx / layout.totalDistance;
+        const progChange = -dx / (layout.totalDistance * getGZ());
         const newProg = Math.max(0, Math.min(1, startProg + progChange));
 
         if (scrollTriggerInstance) {
@@ -648,6 +754,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
 
     // 5. Handle Resize Window
     window.addEventListener("resize", () => {
+      fitStageZoom();
       layout = getLayout();
       if (scrollTriggerInstance) {
         ScrollTrigger.refresh();
