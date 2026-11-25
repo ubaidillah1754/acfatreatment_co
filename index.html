@@ -20,7 +20,7 @@
   <!-- Favicon Logo Resmi -->
   <link rel="icon" type="image/png" href="asset/logo.png">
 
-  <link rel="stylesheet" href="style.css?v=43.0">
+  <link rel="stylesheet" href="style.css?v=46.0">
 </head>
 
 <body>
@@ -315,6 +315,7 @@
     </section> <!-- /testimonials-section -->
 
     <!-- ==================== 3D HORIZONTAL SCROLL GALLERY (SUPAH.IT COVERFLOW) ==================== -->
+    <div class="gallery-3d-scroll" id="gallery3dScroll">
     <div class="gallery-3d-pin-wrap" id="gallery3dPinWrap">
       <div class="gallery-3d-stage" id="gallery3dStage">
 
@@ -567,6 +568,7 @@
       </div>
 
     </div> <!-- /gallery-3d-pin-wrap -->
+    </div> <!-- /gallery-3d-scroll -->
 
     <!-- ==================== 2.5 MANFAAT KEMITRAAN ==================== -->
     <section class="manfaat-section" id="manfaat" aria-label="Manfaat Kemitraan">
@@ -723,9 +725,9 @@
       <div class="showcase-block ekosistem-showcase-block" id="ekosistem">
         <div class="block-title reveal-item">
           <span class="block-tag">EKOSISTEM BISNIS</span>
-          <h3>Tiga Entitas Terintegrasi dalam Satu Ekosistem</h3>
-          <p>Sinergi unit jasa, formulasi chemical mandiri, serta manufaktur mesin terpadu untuk percepatan usaha dan
-            keunggulan kompetitif mitra.</p>
+          <h3>Tiga Kekuatan Terpadu untuk Akselerasi Bisnis Mitra</h3>
+          <p>Sinergi layanan jasa, produk chemical racikan sendiri, dan teknologi manufaktur mesin yang dirancang khusus
+            untuk menekan biaya, mempercepat produksi, dan membuat bisnis Anda selangkah lebih unggul.</p>
         </div>
 
         <div class="ekosistem-carousel-wrap reveal-item">
@@ -927,7 +929,7 @@
       <div class="showcase-block founder-box">
         <div class="founder-card reveal-item reveal-scale">
           <div class="founder-photo-wrap">
-            <img src="asset/foto-founder.jpg?v=2.0" alt="Sayyid Ahmed - Founder acfatreatment" class="founder-photo"
+            <img src="asset/foto-founder.jpg?v=2.0" alt="Farid Ahmad - Founder acfatreatment" class="founder-photo"
               loading="lazy">
             <div class="founder-badge">FOUNDER & CEO</div>
           </div>
@@ -1149,70 +1151,39 @@
       <div class="section-wrap contact-inner">
         <div class="reveal-item">
           <p class="eyebrow">LANGKAH MUDAH BERGABUNG</p>
-          <h2>Formulir Minat Kemitraan<br><em>&amp; Tanya Paket Investasi.</em></h2>
-          <p class="contact-subdesc">Isi nama, alamat/kota, dan pilih paket yang diminati. Data akan langsung
-            terhubung
-            ke WhatsApp tim kemitraan kami untuk menerima proposal resmi dan konsultasi gratis.</p>
+          <h2>Konsultasi Kemitraan<br><em>Langsung via WhatsApp.</em></h2>
+          <p class="contact-subdesc">Cukup masukkan nama dan kota Anda, lalu langsung terhubung ke WhatsApp tim
+            kemitraan kami untuk konsultasi gratis &amp; info lengkap.</p>
         </div>
 
         <div class="consultation-box reveal-item">
           <form class="consultation-form" id="partnerInquiryForm">
             <div class="form-title">
-              <h3>Formulir Konsultasi Kemitraan</h3>
-              <p>Lengkapi data di bawah ini untuk langsung tersambung ke WhatsApp konsultan kami.</p>
+              <h3>Konsultasi Kemitraan</h3>
+              <p>Masukkan nama &amp; kota Anda untuk langsung tersambung ke WhatsApp kami.</p>
             </div>
 
             <div class="form-grid">
               <div class="form-group">
-                <label for="formName">Nama Lengkap *</label>
+                <label for="formName">Nama *</label>
                 <input type="text" id="formName" name="name" placeholder="Contoh: Budi Pratama" required>
               </div>
 
               <div class="form-group">
-                <label for="formPhone">Nomor WhatsApp Aktif *</label>
-                <input type="tel" id="formPhone" name="phone" placeholder="Contoh: 082230196689" required>
-              </div>
-
-              <div class="form-group full-width">
-                <label for="formCity">Alamat Lengkap / Kota Rencana Usaha *</label>
-                <input type="text" id="formCity" name="city"
-                  placeholder="Contoh: Jl. Diponegoro No. 12, Surabaya / Jombang" required>
-              </div>
-
-              <div class="form-group full-width">
-                <label for="formPackage">Paket Kemitraan yang Ingin Ditanyakan *</label>
-                <select id="formPackage" name="package" required>
-                  <option value="" disabled selected>Pilih Paket yang Ingin Diambil</option>
-                  <option value="Paket Basic (Shoe & Helmet - Rp 28.5 Juta)">Paket Basic (Sepatu & Helm - Promo Rp
-                    28.500.000)</option>
-                  <option value="Paket Premium 4-in-1 (Lengkap - Rp 54 Juta)">Paket Premium 4-in-1 (Layanan Lengkap -
-                    Promo Rp 54.000.000)</option>
-                  <option value="Paket Master Exclusive Area (Rp 98 Juta)">Paket Master Exclusive Area (Promo Rp
-                    98.000.000)</option>
-                  <option value="Ingin Konsultasi Dulu Sebelum Memilih">Ingin Konsultasi Dulu Sebelum Memilih</option>
-                </select>
-              </div>
-
-              <div class="form-group full-width">
-                <label for="formNotes">Catatan Tambahan / Pertanyaan (Opsional)</label>
-                <textarea id="formNotes" name="notes" rows="2"
-                  placeholder="Tuliskan pertanyaan Anda mengenai ketersediaan lokasi, estimasi waktu buka, dsb..."></textarea>
+                <label for="formCity">Kota / Domisili *</label>
+                <input type="text" id="formCity" name="city" placeholder="Contoh: Surabaya" required>
               </div>
             </div>
 
             <div class="form-action-row">
               <button type="submit" class="btn btn-primary contact-submit-btn">
-                Kirim via WhatsApp <span>↗</span>
+                Kirim &amp; Chat WhatsApp <span>↗</span>
               </button>
-              <a href="https://wa.me/6282230196689?text=Halo%20Tim%20Kemitraan%20Premium%20Active%20Care%2C%20saya%20tertarik%20konsultasi%20peluang%20usaha%20treatment."
-                target="_blank" rel="noopener" class="btn btn-quiet contact-direct-btn">
-                Chat Langsung Tanpa Form
-              </a>
             </div>
           </form>
         </div>
 
-        <div class="contact-note">KONSULTASI GRATIS · TANPA KOMITMEN AWAL · PROPOSAL LENGKAP</div>
+        <div class="contact-note">KONSULTASI GRATIS · TANPA KOMITMEN AWAL · RESPON CEPAT</div>
       </div>
     </section>
 
@@ -1245,6 +1216,7 @@
           <span class="brand-text">ACFA<span class="brand-accent">TREATMENT</span><span
               class="brand-dot">.</span></span>
         </a>
+        <p class="footer-company">PT HC Integrasi Nusantara</p>
         <p class="footer-desc">Peluang kemitraan bisnis jasa perawatan profesional untuk sepatu, helm, koper, dan
           stroller dengan dukungan menyeluruh dari tim pusat.</p>
       </div>
@@ -1262,8 +1234,8 @@
 
       <div class="footer-col">
         <h5>Kontak Kemitraan</h5>
-        <p class="contact-item"><strong>WhatsApp Kemitraan:</strong><br><a href="https://wa.me/6282230196689"
-            target="_blank" rel="noopener" id="footerWaText">+62 822-3019-6689</a></p>
+        <p class="contact-item"><strong>WhatsApp Kemitraan:</strong><br><a href="https://wa.me/62881027481001"
+            target="_blank" rel="noopener" id="footerWaText">+62 881-0274-81001</a></p>
         <p class="contact-item"><strong>Email Resmi:</strong><br><a href="mailto:sayyidahmed86@gmail.com"
             id="footerEmailLink">sayyidahmed86@gmail.com</a></p>
         <p class="contact-item"><strong>Layanan Konsultasi:</strong><br>Senin – Sabtu, 09.00 – 18.00 WIB</p>
@@ -1279,7 +1251,7 @@
   </footer>
 
   <!-- ==================== FLOATING WHATSAPP BUTTON ==================== -->
-  <a href="https://wa.me/6282230196689?text=Halo%20Tim%20Kemitraan%20acfatreatment%2C%20saya%20tertarik%20konsultasi%20peluang%20usaha%20treatment."
+  <a href="https://wa.me/62881027481001?text=Halo%20Tim%20Kemitraan%20acfatreatment%2C%20saya%20tertarik%20konsultasi%20peluang%20usaha%20treatment."
     class="floating-wa-btn" target="_blank" rel="noopener" aria-label="Konsultasi Kemitraan via WhatsApp">
     <div class="floating-wa-tooltip">Konsultasi Mitra <span>Online</span></div>
     <div class="floating-wa-icon">
@@ -1298,7 +1270,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
   <!-- JavaScript -->
-  <script src="script.js?v=33.0"></script>
+  <script src="script.js?v=35.0"></script>
 </body>
 
 </html>

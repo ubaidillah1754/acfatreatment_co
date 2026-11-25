@@ -169,26 +169,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // 3. PILIH PAKET -> OTOMATIS PILIH DROPDOWN & FOCUS FORM
+  // 3. PILIH PAKET -> SCROLL KE FORM & FOCUS NAMA (PAKET OPSIONAL)
   // =========================================================================
   const selectPackageBtns = document.querySelectorAll(".select-package-btn");
-  const formPackage = document.getElementById("formPackage");
   const formName = document.getElementById("formName");
   const daftarSection = document.getElementById("daftar");
+  let selectedPackage = "";
 
   selectPackageBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-      const chosenPackage = btn.getAttribute("data-package");
-
-      if (formPackage && chosenPackage) {
-        for (let i = 0; i < formPackage.options.length; i++) {
-          if (formPackage.options[i].value === chosenPackage) {
-            formPackage.selectedIndex = i;
-            break;
-          }
-        }
-      }
+      selectedPackage = btn.getAttribute("data-package") || "";
 
       if (daftarSection) {
         const isMobile = window.innerWidth <= 768;
@@ -213,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================================================================
-  // 4. FORMULIR PENDAFTARAN KE WHATSAPP
+  // 4. FORMULIR KONSULTASI SIMPEL (NAMA & KOTA) LANGSUNG KE WHATSAPP
   // =========================================================================
   const partnerForm = document.getElementById("partnerInquiryForm");
 
@@ -222,22 +213,20 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const name = document.getElementById("formName").value.trim();
-      const phone = document.getElementById("formPhone").value.trim();
       const city = document.getElementById("formCity").value.trim();
-      const packageChoice = document.getElementById("formPackage").value;
-      const notes = document.getElementById("formNotes").value.trim() || "-";
+
+      let details = `• Nama: ${name}\n• Kota: ${city}`;
+      if (selectedPackage) {
+        details += `\n• Minat Paket: ${selectedPackage}`;
+      }
 
       const message =
         `Halo Tim Kemitraan acfatreatment,
 
-Saya tertarik untuk mendaftar dan mengambil paket kemitraan:
-• Nama Lengkap: ${name}
-• Nomor WhatsApp: ${phone}
-• Alamat / Kota: ${city}
-• Paket yang Diambil: ${packageChoice}
-• Catatan / Pertanyaan: ${notes}
+Saya tertarik untuk konsultasi peluang kemitraan:
+${details}
 
-Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. Terima kasih!`;
+Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
 
       const encoded = encodeURIComponent(message);
       const waUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encoded}`;
@@ -542,10 +531,11 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
 
       // Padding kiri dan kanan agar kartu pertama dan terakhir bisa berhenti tepat di tengah viewport
       const centerOffset = (window.innerWidth / getGZ() - cardWidth) / 2;
-      track.style.paddingLeft = `${Math.max(0, centerOffset)}px`;
-      track.style.paddingRight = `${Math.max(0, centerOffset)}px`;
+      const padPx = `${Math.max(0, centerOffset)}px`;
+      if (track.style.paddingLeft !== padPx) track.style.paddingLeft = padPx;
+      if (track.style.paddingRight !== padPx) track.style.paddingRight = padPx;
 
-      return { cardWidth, cardStep, totalDistance };
+      return { cardWidth, cardStep, totalDistance, padLeft: Math.max(0, centerOffset) };
     }
 
     let layout = getLayout();
@@ -564,10 +554,23 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       let closestIdx = 0;
       let minDistance = Infinity;
 
+      // Posisi kartu dihitung dari layout (bukan getBoundingClientRect pada kartu yang sudah
+      // ter-transform) supaya hasilnya stabil, tidak bergetar, dan tidak memaksa reflow tiap frame.
+      const gz = getGZ();
+      const trackX = typeof gsap !== "undefined" ? Number(gsap.getProperty(track, "x")) || 0 : 0;
+      const PERSPECTIVE = 1400;
+
       cards.forEach((card, i) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const distFromCenter = cardCenter - stageCenter;
+        const flatCenter = (layout.padLeft + i * layout.cardStep + layout.cardWidth / 2 + trackX) * gz;
+        const flatDist = flatCenter - stageCenter;
+        const maxTZ = isMobile ? 35 : (isTablet ? 80 : 130);
+
+        // Perspektif menggeser titik tengah kartu ke arah tengah layar; hitung titik tetapnya
+        let distFromCenter = flatDist;
+        for (let k = 0; k < 4; k++) {
+          const n = Math.min(1.8, Math.abs(distFromCenter / (vWidth * 0.45))) * maxTZ;
+          distFromCenter = flatDist * (PERSPECTIVE * gz / (PERSPECTIVE * gz + n * gz));
+        }
         const absDistPx = Math.abs(distFromCenter);
 
         if (absDistPx < minDistance) {
@@ -623,7 +626,6 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     // Fungsi pusat untuk menggeser track ke progres tertentu (0..1)
     function applyProgress(prog, animate = false) {
       currentProgress = Math.max(0, Math.min(1, prog));
-      layout = getLayout();
       const currentX = -currentProgress * layout.totalDistance;
 
       if (animate && typeof gsap !== "undefined") {
@@ -667,19 +669,24 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       }
     }
 
+    // Pembungkus scroll: tinggi = 1 layar + jarak scroll. Pin dilakukan CSS (position: sticky).
+    const scrollWrap = document.getElementById("gallery3dScroll");
+    function sizeScrollWrap() {
+      if (!scrollWrap) return;
+      const distance = Math.max(window.innerHeight * 2.5, 1800);
+      scrollWrap.style.height = `${Math.round(window.innerHeight + distance)}px`;
+    }
+
     // 1. Inisialisasi GSAP ScrollTrigger jika tersedia
     if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
 
-      const scrollDistance = Math.max(window.innerHeight * 2.5, 1800);
+      sizeScrollWrap();
 
       scrollTriggerInstance = ScrollTrigger.create({
-        trigger: pinWrap,
-        pin: true,
-        pinSpacing: true,
+        trigger: scrollWrap || pinWrap,
         start: "top top",
-        end: () => `+=${scrollDistance}`,
-        scrub: true,
+        end: "bottom bottom",
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           applyProgress(self.progress);
@@ -753,6 +760,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     window.addEventListener("resize", () => {
       fitStageZoom();
       layout = getLayout();
+      sizeScrollWrap();
       if (scrollTriggerInstance) {
         ScrollTrigger.refresh();
       }
@@ -764,8 +772,15 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
     applyProgress(0);
 
     // Refresh ScrollTrigger setelah layout dan media selesai stabil
+    function relayoutGallery() {
+      fitStageZoom();
+      layout = getLayout();
+      applyProgress(currentProgress);
+    }
+    window.addEventListener("load", relayoutGallery);
     if (typeof ScrollTrigger !== "undefined") {
       setTimeout(() => {
+        relayoutGallery();
         ScrollTrigger.refresh();
       }, 350);
     }
@@ -1118,7 +1133,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
         </ul>
         <div class="modal-footer-actions">
           <button type="button" class="modal-btn-dismiss" id="modalDismissBtn">Tutup Rincian</button>
-          <a href="https://wa.me/6282230196689?text=Halo%20Tim%20Kemitraan%2C%20saya%20ingin%20tanya%20lebih%20lanjut%20tentang%20entitas%20${encodeURIComponent(data.title)}" target="_blank" rel="noopener" class="modal-btn-cta">
+          <a href="https://wa.me/${CONFIG.whatsappNumber}?text=Halo%20Tim%20Kemitraan%2C%20saya%20ingin%20tanya%20lebih%20lanjut%20tentang%20entitas%20${encodeURIComponent(data.title)}" target="_blank" rel="noopener" class="modal-btn-cta">
             Konsultasi WhatsApp <span>↗</span>
           </a>
         </div>
