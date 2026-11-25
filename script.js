@@ -697,7 +697,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       }
     }
 
-    window.addEventListener("scroll", updateDropLine, { passive: true });
+    window.addEventListener("scroll", (function (f) { let q = false; return function () { if (q) return; q = true; requestAnimationFrame(function () { q = false; f(); }); }; })(updateDropLine), { passive: true });
     window.addEventListener("resize", updateDropLine, { passive: true });
     updateDropLine();
   })();
@@ -767,7 +767,7 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
       }, { passive: true });
     });
 
-    window.addEventListener("scroll", updateScrollEffects, { passive: true });
+    window.addEventListener("scroll", (function (f) { let q = false; return function () { if (q) return; q = true; requestAnimationFrame(function () { q = false; f(); }); }; })(updateScrollEffects), { passive: true });
     window.addEventListener("resize", updateScrollEffects, { passive: true });
     updateScrollEffects();
   })();
@@ -1060,3 +1060,65 @@ Mohon informasi langkah selanjutnya dan pengiriman proposal kemitraan resminya. 
   })();
 });
 
+// ===== MOBILE FIXES (berjalan saat parsing, sebelum DOMContentLoaded) =====
+(function () {
+  "use strict";
+
+  var coarse =
+    window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 1024;
+
+  // A4. Resize akibat address bar naik/turun tidak memicu refresh ScrollTrigger
+  if (window.ScrollTrigger && typeof ScrollTrigger.config === "function") {
+    ScrollTrigger.config({ ignoreMobileResize: true });
+  }
+
+  // A4. Di layar sentuh: abaikan resize yang lebarnya tidak berubah,
+  // dan debounce 200ms untuk resize yang lebarnya berubah (rotasi layar).
+  if (coarse) {
+    var lastW = window.innerWidth;
+    var timer = null;
+    var redispatching = false;
+
+    window.addEventListener("resize", function (e) {
+      if (redispatching) return;
+      e.stopImmediatePropagation();
+      if (window.innerWidth === lastW) return;
+
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        lastW = window.innerWidth;
+        redispatching = true;
+        window.dispatchEvent(new Event("resize"));
+        redispatching = false;
+      }, 200);
+    });
+  }
+
+  // A5. Bila browser mengambil alih gesture (mis. scroll vertikal), reset state drag galeri
+  window.addEventListener("pointercancel", function () {
+    window.dispatchEvent(new Event("pointerup"));
+  });
+
+  // B15. Menu mobile: tutup dengan Escape atau tap di luar menu
+  var toggle = document.getElementById("menuToggle");
+  var nav = document.getElementById("mainNav");
+
+  function closeMenu() {
+    if (!toggle || !nav || !nav.classList.contains("open")) return;
+    nav.classList.remove("open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.querySelectorAll(".hamburger-line").forEach(function (line) {
+      line.removeAttribute("style");
+    });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeMenu();
+  });
+
+  document.addEventListener("pointerdown", function (e) {
+    if (!nav || !toggle || !nav.classList.contains("open")) return;
+    if (nav.contains(e.target) || toggle.contains(e.target)) return;
+    closeMenu();
+  });
+})();

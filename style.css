@@ -3429,3 +3429,324 @@ body::after {
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   MOBILE FIXES — dimuat SETELAH style.css (menimpa, tidak mengubah file asli)
+   ========================================================================== */
+
+/* ---------- Semua ukuran layar ---------- */
+
+/* A1. Carousel ekosistem: izinkan geser horizontal di layar sentuh */
+.ekosistem-track {
+  touch-action: pan-x pan-y;
+}
+
+/* A. Area sentuh lebih besar untuk dot carousel (tampilan tetap 8px) */
+.ekosistem-dot {
+  position: relative;
+}
+
+.ekosistem-dot::after {
+  content: "";
+  position: absolute;
+  inset: -14px -6px;
+}
+
+/* B. Teks panjang tidak meluber */
+.founder-contact-chip,
+.founder-contact-chip a,
+.contact-item,
+.contact-item a,
+.footer-desc {
+  overflow-wrap: anywhere;
+}
+
+/* B15. Animasi hamburger -> X dari CSS (posisi presisi: gap 5px + garis 1.5px) */
+.menu-toggle .hamburger-line {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.menu-toggle[aria-expanded="true"] .hamburger-line:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg) !important;
+}
+
+.menu-toggle[aria-expanded="true"] .hamburger-line:nth-child(2) {
+  opacity: 0 !important;
+}
+
+.menu-toggle[aria-expanded="true"] .hamburger-line:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg) !important;
+}
+
+/* ---------- Tablet & di bawahnya ---------- */
+@media (max-width: 1024px) {
+  .founder-contact-chip {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+/* B15. Menu mobile: boleh di-scroll bila layar pendek */
+@media (max-width: 920px) {
+  .site-header {
+    top: calc(14px + env(safe-area-inset-top, 0px));
+  }
+
+  .nav {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .menu-toggle {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@supports (height: 100svh) {
+  @media (max-width: 920px) {
+    .nav {
+      max-height: calc(100svh - 100px);
+    }
+  }
+}
+
+/* ---------- Mobile (<= 768px) ---------- */
+@media (max-width: 768px) {
+
+  /* A2. Video: rasio 16:9 untuk area video saja (bar atas/bawah di luar rasio) */
+  .cinema-frame {
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
+  .cinema-frame .video-content {
+    flex: 0 0 auto;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
+
+  .cinema-frame .video-top small {
+    display: none;
+  }
+
+  /* A7. Kontrol video YouTube harus bisa di-tap (menimpa aturan Lenis) */
+  .lenis.lenis-smooth iframe {
+    pointer-events: auto;
+  }
+
+  /* A3. Galeri 3D: tinggi layar nyata (tanpa address bar) + isi lebih ringkas */
+  .gallery-3d-pin-wrap {
+    padding: 12px 0;
+  }
+
+  .gallery-3d-viewport {
+    padding: 16px 0 20px;
+  }
+
+  .gallery-3d-header {
+    gap: 12px;
+  }
+
+  .gallery-3d-hint {
+    flex: 1;
+    min-width: 0;
+    font-size: 10px;
+    line-height: 1.35;
+    letter-spacing: 0.8px;
+    align-items: flex-start;
+  }
+
+  .gallery-hint-pulse {
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .gallery-3d-nav {
+    flex-shrink: 0;
+  }
+
+  .gallery-3d-card {
+    min-height: 420px;
+  }
+
+  /* B13. Tap target */
+  .gallery-nav-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ekosistem-nav-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* A6. Input 16px agar iOS tidak zoom otomatis */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px;
+  }
+
+  /* B8. Chip hero: grid 2x2, titik pemisah disembunyikan */
+  .hero-meta-centered {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    gap: 12px 26px;
+  }
+
+  .hero-meta-centered .meta-dot {
+    display: none;
+  }
+
+  /* B9. Tombol hero konsisten */
+  .btn-hero-pill {
+    width: auto !important;
+    min-width: min(240px, 100%);
+    max-width: 100%;
+  }
+
+  /* B10. Kartu paket */
+  .package-card {
+    padding: 28px 20px 24px;
+  }
+
+  .package-grid {
+    margin-top: 34px;
+    gap: 34px;
+  }
+
+  .popular-ribbon {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+    width: max-content;
+    max-width: calc(100% - 24px);
+  }
+
+  .package-pricing {
+    flex-wrap: wrap;
+  }
+
+  .package-subtitle {
+    min-height: 0;
+  }
+
+  /* B11. Form: tombol ditumpuk vertikal */
+  .form-action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .contact-submit-btn,
+  .contact-direct-btn {
+    flex: none;
+    width: 100%;
+  }
+
+  /* B14. Jarak section lebih rapat + tombol WhatsApp aman dari tepi layar */
+  .section-space {
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+
+  .contact-section {
+    padding: 72px 0;
+  }
+
+  .footer {
+    padding: 52px 0 24px;
+  }
+
+  .floating-wa-btn {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .floating-wa-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* C16. Matikan efek aurora (blur 140px + animasi) di HP */
+  body::before,
+  body::after {
+    display: none;
+    animation: none;
+  }
+
+  /* C17. Reveal lebih ringan: tanpa blur, tanpa delay bertingkat */
+  .reveal-item,
+  .reveal-item.reveal-scale {
+    filter: none;
+    transform: translateY(28px) scale(0.98);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: auto;
+  }
+
+  .reveal-group .reveal-item {
+    transition-delay: 0s !important;
+  }
+
+  .reveal-item.is-visible,
+  .reveal-item.reveal-scale.is-visible {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  /* C17. Efek blur kata di bagian Manfaat lebih ringan */
+  .mw {
+    filter: blur(2.5px);
+    will-change: auto;
+  }
+
+  .manfaat-words {
+    will-change: auto;
+  }
+}
+
+/* ---------- HP layar pendek: galeri 3D lebih ringkas ---------- */
+@media (max-width: 768px) and (max-height: 700px) {
+  .gallery-3d-card {
+    min-height: 390px;
+    padding: 18px 16px;
+  }
+
+  .card-top-row {
+    margin-bottom: 12px;
+  }
+
+  .card-quote {
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+}
+
+/* ---------- HP kecil (<= 380px) ---------- */
+@media (max-width: 380px) {
+  .btn {
+    white-space: normal;
+    padding: 12px 16px;
+  }
+
+  .brand-text {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* ---------- Tinggi layar nyata di HP (menimpa 100vh) ---------- */
+@supports (height: 100svh) {
+  @media (max-width: 768px) {
+    .gallery-3d-pin-wrap {
+      height: 100svh;
+      min-height: 100svh;
+      max-height: 100svh;
+    }
+  }
+}
