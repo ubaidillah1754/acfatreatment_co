@@ -339,17 +339,20 @@ section[id],
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.90);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(0, 60, 158, 0.16);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(0, 60, 158, 0.14);
   border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0, 60, 158, 0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 8px 28px rgba(0, 60, 158, 0.10);
   transition: var(--trans-fast);
 }
 
 .nav-container:hover {
-  border-color: rgba(0, 60, 158, 0.32);
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(0, 60, 158, 0.28);
 }
 
 /* Brand & Logo */
@@ -3009,18 +3012,22 @@ body.modal-open {
 }
 
 /* ==========================================================================
-   MOBILE NAVBAR COMPACT (<= 920px)
+   MOBILE NAVBAR COMPACT — OPSI B (<= 920px)
    ========================================================================== */
 @media (max-width: 920px) {
   .site-header {
-    top: calc(10px + env(safe-area-inset-top, 0px));
-    width: calc(100% - 28px);
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    width: calc(100% - 56px);
+    max-width: 340px;
   }
 
   .nav-container {
     height: 40px;
     padding: 0 6px 0 12px;
-    border-radius: 11px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.70);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
   }
 
   .brand {
@@ -3043,7 +3050,9 @@ body.modal-open {
     height: 30px;
     padding: 5px;
     gap: 3.5px;
-    border-radius: 7px;
+    border-radius: 8px;
+    background: rgba(0, 60, 158, 0.06);
+    border: 1px solid rgba(0, 60, 158, 0.16);
   }
 
   .hamburger-line {
@@ -3059,12 +3068,14 @@ body.modal-open {
     align-items: stretch;
     gap: 4px;
     padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.97);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid rgba(0, 60, 158, 0.18);
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 60, 158, 0.16);
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(0, 60, 158, 0.16);
+    border-radius: 13px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.90),
+      0 15px 35px rgba(0, 60, 158, 0.16);
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     overscroll-behavior: contain;
