@@ -1343,6 +1343,8 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
 })();
 
 
+
+
 // =========================================================================
 // SLIDER MOBILE (Gerai & Cabang, Layanan & Chemical): indikator titik
 // =========================================================================
@@ -1383,5 +1385,108 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
     }, { passive: true });
     window.addEventListener("resize", update);
     update();
+  });
+}
+)
+  ();
+
+// =========================================================================
+// TAB SWITCHER: KONSEP GERAI MITRA & RUANG KERJA
+// =========================================================================
+(function () {
+  var showcaseBlock = document.getElementById("showcaseGerai");
+  if (!showcaseBlock) return;
+
+  var tabBtns = Array.prototype.slice.call(showcaseBlock.querySelectorAll(".showcase-tab-btn"));
+  var panels = Array.prototype.slice.call(showcaseBlock.querySelectorAll(".showcase-tab-panel"));
+
+  tabBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var targetId = btn.getAttribute("data-tab-target");
+
+      tabBtns.forEach(function (b) {
+        var isTarget = b === btn;
+        b.classList.toggle("is-active", isTarget);
+        b.setAttribute("aria-selected", isTarget ? "true" : "false");
+      });
+
+      panels.forEach(function (panel) {
+        var isTarget = panel.id === targetId;
+        panel.classList.toggle("is-active", isTarget);
+        panel.hidden = !isTarget;
+
+        if (isTarget) {
+          // Pastikan kartu pada tab yang baru dibuka langsung terlihat (tidak tertahan blur reveal)
+          panel.querySelectorAll(".reveal-item").forEach(function (item) {
+            item.classList.add("is-visible");
+          });
+
+          // Reset posisi horizontal slider & titik indikator di versi mobile
+          var sliderTrack = panel.querySelector("[data-slider]");
+          if (sliderTrack) {
+            sliderTrack.scrollTo({ left: 0, behavior: "auto" });
+            sliderTrack.dispatchEvent(new Event("scroll"));
+          }
+        }
+      });
+    });
+  });
+})();
+
+// =========================================================================
+// AUTO-HIDE NAVBAR & TOMBOL WHATSAPP SAAT TIDAK ADA GERAKAN (IDLE 2.5 DETIK)
+// =========================================================================
+(function () {
+  var header = document.querySelector(".site-header");
+  var waBtn = document.querySelector(".floating-wa-btn");
+  var mainNav = document.getElementById("mainNav");
+  if (!header && !waBtn) return;
+
+  var idleTimer = null;
+  var isPointerInsideUI = false;
+  var IDLE_DELAY = 2500; // 2.5 detik tanpa gerakan
+
+  function showFloatingUI() {
+    if (header) header.classList.remove("is-auto-hidden");
+    if (waBtn) waBtn.classList.remove("is-auto-hidden");
+  }
+
+  function hideFloatingUI() {
+    // Tetap tampil jika masih di bagian paling atas halaman (Hero)
+    if (window.scrollY < 100) return;
+    // Jangan sembunyi jika kursor sedang mengarah ke navbar / tombol WA
+    if (isPointerInsideUI) return;
+    // Jangan sembunyi jika menu mobile sedang terbuka
+    if (mainNav && mainNav.classList.contains("open")) return;
+
+    if (header) header.classList.add("is-auto-hidden");
+    if (waBtn) waBtn.classList.add("is-auto-hidden");
+  }
+
+  function resetIdleTimer() {
+    showFloatingUI();
+    clearTimeout(idleTimer);
+    if (window.scrollY >= 100) {
+      idleTimer = setTimeout(hideFloatingUI, IDLE_DELAY);
+    }
+  }
+
+  // Jeda auto-hide saat kursor berada di atas navbar atau tombol WhatsApp
+  [header, waBtn].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener("mouseenter", function () {
+      isPointerInsideUI = true;
+      showFloatingUI();
+      clearTimeout(idleTimer);
+    });
+    el.addEventListener("mouseleave", function () {
+      isPointerInsideUI = false;
+      resetIdleTimer();
+    });
+  });
+
+  // Dengarkan gerakan pengguna (scroll, mouse, sentuhan, keyboard)
+  ["scroll", "mousemove", "pointermove", "touchstart", "keydown"].forEach(function (evt) {
+    window.addEventListener(evt, resetIdleTimer, { passive: true });
   });
 })();
