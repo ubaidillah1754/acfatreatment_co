@@ -1444,7 +1444,7 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
 
   var idleTimer = null;
   var isPointerInsideUI = false;
-  var IDLE_DELAY = 2500; // 2.5 detik tanpa gerakan
+  var IDLE_DELAY = 1500; // 1.5 detik tanpa gerakan
 
   function showFloatingUI() {
     if (header) header.classList.remove("is-auto-hidden");
