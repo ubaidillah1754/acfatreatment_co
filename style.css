@@ -1537,7 +1537,7 @@ section[id],
    EKOSISTEM BISNIS (CAROUSEL & DETAIL MODAL)
    ========================================================================== */
 .ekosistem-showcase-block {
-  margin-bottom: 75px;
+  margin-bottom: 15px;
 }
 
 .ekosistem-carousel-wrap {
@@ -2169,12 +2169,14 @@ body.modal-open {
 }
 
 /* ==========================================================================
-   4. PILIHAN PAKET KEMITRAAN
+   4. PILIHAN PAKET KEMITRAAN (COMPACT PROPORTION — DESKTOP & MOBILE)
    ========================================================================== */
 .packages-section {
   background: var(--bg-section);
   border-top: 1px solid var(--border-divider);
   border-bottom: 1px solid var(--border-divider);
+  padding-top: 68px;
+  padding-bottom: 68px;
 }
 
 .promo-badge-ribbon {
@@ -2182,12 +2184,12 @@ body.modal-open {
   background: rgba(0, 60, 158, 0.08);
   color: #003C9E;
   border: 1px solid var(--border-highlight);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  padding: 5px 14px;
+  padding: 4px 12px;
   border-radius: var(--radius-pill);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   box-shadow: var(--glow-cyan-sm);
 }
 
@@ -2202,17 +2204,17 @@ body.modal-open {
 
 .package-grid {
   display: grid;
-  grid-template-columns: 1fr 1.06fr 1fr;
-  gap: 18px;
+  grid-template-columns: 1fr 1.04fr 1fr;
+  gap: 14px;
   align-items: stretch;
-  max-width: 980px;
-  margin: 22px auto 0;
+  max-width: 880px;
+  margin: 18px auto 0;
 }
 
 .package-card {
   background: var(--bg-card);
-  border-radius: 15px;
-  padding: 24px 20px 22px;
+  border-radius: 14px;
+  padding: 18px 16px 16px;
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-subtle);
   display: flex;
@@ -2222,21 +2224,21 @@ body.modal-open {
 }
 
 .package-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: rgba(0, 60, 158, 0.36);
   box-shadow: var(--shadow-card);
 }
 
 .package-card.featured-package {
-  border: 2px solid #003C9E;
-  box-shadow: 0 20px 50px rgba(0, 60, 158, 0.18);
-  transform: scale(1.015);
+  border: 1.5px solid #003C9E;
+  box-shadow: 0 16px 38px rgba(0, 60, 158, 0.16);
+  transform: scale(1.01);
   z-index: 2;
   background: linear-gradient(180deg, #FFFFFF 0%, #EBF1FA 100%);
 }
 
 .package-card.featured-package:hover {
-  transform: scale(1.015) translateY(-4px);
+  transform: scale(1.01) translateY(-3px);
 }
 
 .popular-ribbon {
@@ -2246,32 +2248,32 @@ body.modal-open {
   transform: translate(-50%, -50%);
   background: #003C9E;
   color: #FFFFFF;
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 800;
-  letter-spacing: 0.12em;
-  padding: 4px 11px;
+  letter-spacing: 0.11em;
+  padding: 3px 10px;
   border-radius: var(--radius-pill);
-  box-shadow: 0 4px 12px rgba(0, 60, 158, 0.30);
+  box-shadow: 0 4px 12px rgba(0, 60, 158, 0.28);
   white-space: nowrap;
 }
 
 .package-header {
   border-bottom: 1px solid var(--border-divider);
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .package-badge {
   display: inline-block;
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  padding: 3px 8px;
+  letter-spacing: 0.11em;
+  padding: 2.5px 7px;
   border-radius: var(--radius-sm);
   background: rgba(0, 60, 158, 0.08);
   color: #003C9E;
   border: 1px solid var(--border-highlight);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .package-badge.badge-green {
@@ -2281,58 +2283,58 @@ body.modal-open {
 }
 
 .package-header h3 {
-  font-size: 19px;
-  margin-bottom: 4px;
+  font-size: 17px;
+  margin-bottom: 3px;
 }
 
 .package-subtitle {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-secondary);
-  line-height: 1.45;
-  min-height: 34px;
+  line-height: 1.4;
+  min-height: 30px;
 }
 
 .pricing-strike-wrap {
-  margin-top: 10px;
+  margin-top: 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .strike-label {
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--text-muted);
 }
 
 .strike-amount {
-  font-size: 12.5px;
+  font-size: 11.5px;
   color: var(--text-muted);
   text-decoration: line-through;
   font-weight: 600;
 }
 
 .package-pricing {
-  margin: 2px 0 6px;
+  margin: 2px 0 5px;
   display: flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 3px;
 }
 
 .package-pricing .currency {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-number);
 }
 
 .package-pricing .amount {
-  font-size: clamp(23px, 2.3vw, 29px);
+  font-size: clamp(20px, 2vw, 25px);
   font-weight: 800;
   color: var(--text-number);
   letter-spacing: -0.04em;
 }
 
 .package-pricing .period {
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -2342,9 +2344,9 @@ body.modal-open {
   background: rgba(0, 60, 158, 0.08);
   color: #003C9E;
   border: 1px solid var(--border-highlight);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
-  padding: 2.5px 9px;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
 }
 
@@ -2358,31 +2360,31 @@ body.modal-open {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 11px;
-  margin-bottom: 18px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
 .feature-category b {
   display: block;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-heading);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .feature-category ul {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .feature-category li {
-  font-size: 12px;
-  line-height: 1.42;
+  font-size: 11.5px;
+  line-height: 1.38;
   color: var(--text-secondary);
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 5px;
 }
 
 .check-icon,
@@ -2397,8 +2399,8 @@ body.modal-open {
 }
 
 .package-footer .btn {
-  padding: 10px 16px;
-  font-size: 12.5px;
+  padding: 9px 14px;
+  font-size: 12px;
 }
 
 /* ==========================================================================
