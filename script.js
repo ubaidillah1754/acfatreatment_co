@@ -917,7 +917,7 @@ Mohon informasi lebih lanjut dan arahan selanjutnya. Terima kasih!`;
     const EKOSISTEM_DATA = [
       {
         tag: "01 / LAYANAN & RETAIL",
-        title: "ACFA Treatment Co & De'Acfa",
+        title: "ACFA Treatment Co",
         desc: "Lini bisnis utama yang bergerak di bidang jasa perawatan bergaransi serta penjualan produk perawatan mandiri untuk pasar produktif.",
         points: [
           "Layanan cuci dan reparasi sepatu, tas, topi, helm, koper, hingga aksesoris.",

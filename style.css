@@ -4466,3 +4466,28 @@ html {
   margin-top: -42px;
   padding-bottom: 12px;
 }
+
+/* ==========================================================================
+   KOTAK BADGE TEGAS UNTUK LABEL EKOSISTEM (.ekosistem-tag)
+   ========================================================================== */
+.ekosistem-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(0, 60, 158, 0.07);
+  border: 1px solid rgba(0, 60, 158, 0.24);
+  color: #003C9E;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  transition: all 0.3s ease;
+}
+
+/* Saat kartu sedang aktif di tengah, kotak label ikut menyala lebih tegas */
+.ekosistem-card.is-active .ekosistem-tag {
+  background: rgba(0, 60, 158, 0.11);
+  border-color: rgba(0, 60, 158, 0.38);
+  box-shadow: 0 3px 10px rgba(0, 60, 158, 0.08);
+}
